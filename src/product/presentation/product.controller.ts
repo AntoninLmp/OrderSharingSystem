@@ -23,7 +23,7 @@ export class ProductController {
 
   @Post()
   @HttpCode(200)
-  async create(@Body() product: Product): Promise<Product> {
+  create(@Body() product: Product): Product {
     try {
       return this.productService.create(product);
     } catch (error) {
@@ -35,12 +35,12 @@ export class ProductController {
   }
 
   @Get()
-  async getAll(): Promise<Product[]> {
+  getAll(): Product[] {
     return this.productService.findAll();
   }
 
   @Put(":id")
-  async update(@Param("id") id: string, @Body() product: Product): Promise<Product> {
+  update(@Param("id") id: string, @Body() product: Product): Product {
     try {
       return this.productService.update(Number(id), product);
     } catch (error) {
@@ -55,7 +55,7 @@ export class ProductController {
 
   @Delete(":id")
   @HttpCode(204)
-  async delete(@Param("id") id: number): Promise<void> {
+  delete(@Param("id") id: number): void {
     try {
       this.productService.delete(id);
     } catch (error) {

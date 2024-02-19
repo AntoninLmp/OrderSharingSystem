@@ -23,9 +23,9 @@ export class ProductController {
 
   @Post()
   @HttpCode(200)
-  create(@Body() product: Product): Product {
+  async create(@Body() createOrUpdateProductDto: CreateOrUpdateProductDto): Promise<Product> {
     try {
-      return this.productService.create(product);
+      return await this.productService.create(createOrUpdateProductDto as Product);
     } catch (error) {
       if (error instanceof ProductAlreadyExistsException) {
         throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
@@ -40,9 +40,9 @@ export class ProductController {
   }
 
   @Put(":id")
-  update(@Param("id") id: string, @Body() product: Product): Product {
+  async update(@Param("id") id: string, @Body() createOrUpdateProductDto: CreateOrUpdateProductDto): Promise<Product> {
     try {
-      return this.productService.update(Number(id), product);
+      return await this.productService.update(Number(id), createOrUpdateProductDto as Product);
     } catch (error) {
       if (error instanceof ProductIdNotMatchingException) {
         throw new HttpException(error.message, HttpStatus.BAD_REQUEST);

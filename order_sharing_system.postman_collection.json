@@ -13,7 +13,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n    \"id\": 1,\n    \"name\": \"name\",\n    \"description\": \"description\",\n    \"price\": 20\n}",
+					"raw": "{\n    \"name\": \"{{productName}}\",\n    \"description\": \"{{productDescription}}\",\n    \"price\": {{productPrice}}\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -39,7 +39,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n    \"id\": 1,\n    \"name\": \"name\",\n    \"description\": \"description\",\n    \"price\": 15\n}",
+					"raw": "{\n    \"name\": \"{{productName}}\",\n    \"description\": \"{{productDescription}}\",\n    \"price\": {{productPrice}}\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -47,13 +47,13 @@
 					}
 				},
 				"url": {
-					"raw": "{{url}}/products/1",
+					"raw": "{{url}}/products/{{productId}}",
 					"host": [
 						"{{url}}"
 					],
 					"path": [
 						"products",
-						"1"
+						"{{productId}}"
 					]
 				}
 			},
@@ -94,17 +94,55 @@
 				"method": "DELETE",
 				"header": [],
 				"url": {
-					"raw": "{{url}}/products/1",
+					"raw": "{{url}}/products/{{productId}}",
 					"host": [
 						"{{url}}"
 					],
 					"path": [
 						"products",
-						"1"
+						"{{productId}}"
 					]
 				}
 			},
 			"response": []
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "productId",
+			"value": "1"
+		},
+		{
+			"key": "productName",
+			"value": "name"
+		},
+		{
+			"key": "productDescription",
+			"value": "description"
+		},
+		{
+			"key": "productPrice",
+			"value": "15"
 		}
 	]
 }

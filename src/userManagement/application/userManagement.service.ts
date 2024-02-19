@@ -11,9 +11,12 @@ export class UserManagementService implements IUserManagementService {
   constructor(@InjectRepository(User) private readonly userRepository: Repository<User>) {}
 
   async create(user: User): Promise<User> {
-    const userFound = await this.userRepository.findOneBy({
-      name: user.name,
-      email: user.email,
+    console.log("user", user);
+    const userFound = await this.userRepository.findOne({
+      where: {
+        name: user.name,
+        email: user.email,
+      },
     });
     if (userFound) {
       throw new UserAlreadyExistsException(user.id);

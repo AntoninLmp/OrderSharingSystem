@@ -13,8 +13,8 @@ import {
 } from "@nestjs/common";
 import { IProductService } from "../application/product.service.interface";
 import { Product } from "../domain/product.entity";
+import { CreateOrUpdateProductDto } from "../dto/createOrUpdateProduct.dto";
 import { ProductAlreadyExistsException } from "../exception/productAlreadyExists.exception";
-import { ProductIdNotMatchingException } from "../exception/productIdNotMatching.exception";
 import { ProductNotFoundException } from "../exception/productNotFound.exception";
 
 @Controller("products")
@@ -23,9 +23,9 @@ export class ProductController {
 
   @Post()
   @HttpCode(200)
-  create(@Body() product: Product): Product {
+  async create(@Body() createOrUpdateProductDto: CreateOrUpdateProductDto): Promise<Product> {
     try {
-      return this.productService.create(product);
+      return await this.productService.create(createOrUpdateProductDto as Product);
     } catch (error) {
       if (error instanceof ProductAlreadyExistsException) {
         throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
@@ -35,18 +35,20 @@ export class ProductController {
   }
 
   @Get()
-  getAll(): Product[] {
-    return this.productService.findAll();
+  async getAll(): Promise<Product[]> {
+    try {
+      return await this.productService.findAll();
+    } catch (error) {
+      throw new HttpException("Internal Server Error", HttpStatus.INTERNAL_SERVER_ERROR);
+    }
   }
 
   @Put(":id")
-  update(@Param("id") id: string, @Body() product: Product): Product {
+  async update(@Param("id") id: string, @Body() createOrUpdateProductDto: CreateOrUpdateProductDto): Promise<Product> {
     try {
-      return this.productService.update(Number(id), product);
+      return await this.productService.update(Number(id), createOrUpdateProductDto as Product);
     } catch (error) {
-      if (error instanceof ProductIdNotMatchingException) {
-        throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
-      } else if (error instanceof ProductNotFoundException) {
+      if (error instanceof ProductNotFoundException) {
         throw new HttpException(error.message, HttpStatus.NOT_FOUND);
       }
       throw new HttpException("Internal Server Error", HttpStatus.INTERNAL_SERVER_ERROR);
@@ -55,9 +57,9 @@ export class ProductController {
 
   @Delete(":id")
   @HttpCode(204)
-  delete(@Param("id") id: number): void {
+  async delete(@Param("id") id: number): Promise<void> {
     try {
-      this.productService.delete(id);
+      await this.productService.delete(id);
     } catch (error) {
       if (error instanceof ProductNotFoundException) {
         throw new HttpException(error.message, HttpStatus.NOT_FOUND);

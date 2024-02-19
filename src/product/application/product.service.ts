@@ -1,42 +1,53 @@
-import { Inject, Injectable } from "@nestjs/common";
+import { Injectable } from "@nestjs/common";
+import { InjectRepository } from "@nestjs/typeorm";
+import { Repository } from "typeorm";
 import { Product } from "../domain/product.entity";
 import { ProductAlreadyExistsException } from "../exception/productAlreadyExists.exception";
-import { ProductIdNotMatchingException } from "../exception/productIdNotMatching.exception";
 import { ProductNotFoundException } from "../exception/productNotFound.exception";
-import { IProductRepository } from "../persistence/product.repository.interface";
 import { IProductService } from "./product.service.interface";
 
 @Injectable()
 export class ProductService implements IProductService {
-  constructor(@Inject("IProductRepository") private readonly productRepository: IProductRepository) {}
+  constructor(
+    @InjectRepository(Product)
+    private readonly productRepository: Repository<Product>,
+  ) {}
 
-  create(product: Product): Product {
-    if (this.productRepository.findById(product.id)) {
-      throw new ProductAlreadyExistsException(product.id);
+  async create(product: Product): Promise<Product> {
+    const productFound = await this.productRepository.findOneBy({
+      name: product.name,
+      description: product.description,
+      price: product.price,
+    });
+
+    if (productFound) {
+      throw new ProductAlreadyExistsException(productFound.id);
     }
-    return this.productRepository.add(product);
+
+    return await this.productRepository.save(product);
   }
 
-  findAll(): Product[] {
-    return this.productRepository.findAll();
+  async findAll(): Promise<Product[]> {
+    return await this.productRepository.find();
   }
-  update(id: number, product: Product): Product {
-    if (id !== product.id) {
-      throw new ProductIdNotMatchingException(id, product.id);
-    }
 
-    if (!this.productRepository.findById(id)) {
+  async update(id: number, product: Product): Promise<Product> {
+    const productFound = await this.productRepository.findOneBy({ id });
+
+    if (!productFound) {
       throw new ProductNotFoundException(id);
     }
 
-    return this.productRepository.update(id, product);
+    return await this.productRepository.save({ ...productFound, ...product });
   }
 
-  delete(id: number): void {
-    if (!this.productRepository.findById(id)) {
+  async delete(id: number): Promise<void> {
+    const productFound = await this.productRepository.findOneBy({ id });
+
+    if (!productFound) {
       throw new ProductNotFoundException(id);
     }
 
-    return this.productRepository.delete(id);
+    await this.productRepository.delete(id);
   }
 }

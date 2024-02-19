@@ -22,7 +22,8 @@ import { UserModule } from "./userManagement/userManagement.module";
       }),
       inject: [ConfigService],
     }),
-    ProductModule, UserModule,
+    ProductModule,
+    UserModule,
   ],
 })
 export class AppModule {}

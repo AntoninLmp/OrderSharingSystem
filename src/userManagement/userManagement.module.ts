@@ -1,15 +1,13 @@
 import { Module } from "@nestjs/common";
+import { TypeOrmModule } from "@nestjs/typeorm";
 import { UserManagementService } from "./application/userManagement.service";
-import { UserManagementRepository } from "./persistence/userManagement.repository";
+import { User } from "./domain/user.entity";
 import { UserManagementController } from "./presentation/userManagement.controller";
 
 @Module({
+  imports: [TypeOrmModule.forFeature([User])],
   controllers: [UserManagementController],
   providers: [
-    {
-      provide: "IUserManagementRepository",
-      useClass: UserManagementRepository,
-    },
     {
       provide: "IUserManagementService",
       useClass: UserManagementService,

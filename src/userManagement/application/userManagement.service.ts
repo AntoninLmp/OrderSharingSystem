@@ -1,40 +1,43 @@
-import { Inject, Injectable } from "@nestjs/common";
+import { Injectable } from "@nestjs/common";
+import { InjectRepository } from "@nestjs/typeorm";
+import { Repository } from "typeorm";
 import { User } from "../domain/user.entity";
 import { UserAlreadyExistsException } from "../exception/UserAlreadyExists.exception";
-import { UserIdNotMatchingException } from "../exception/UserIdNotMatching.exception";
 import { UserNotFoundException } from "../exception/UserNotFoundException.exception";
-import { IUserManagementRepository } from "../persistence/userManagement.repository.interface";
 import { IUserManagementService } from "./userManagement.service.interface";
 
 @Injectable()
 export class UserManagementService implements IUserManagementService {
-  constructor(@Inject("IUserManagementRepository") private readonly userRepository: IUserManagementRepository) {}
+  constructor(@InjectRepository(User) private readonly userRepository: Repository<User>) {}
 
-  create(user: User): User {
-    if (this.userRepository.findById(user.id)) {
+  async create(user: User): Promise<User> {
+    const userFound = await this.userRepository.findOneBy({
+      name: user.name,
+      email: user.email,
+    });
+    if (userFound) {
       throw new UserAlreadyExistsException(user.id);
     }
-    return this.userRepository.create(user);
+    return await this.userRepository.save(user);
   }
 
-  findAll(): User[] {
-    return this.userRepository.findAll();
+  async findAll(): Promise<User[]> {
+    return await this.userRepository.find();
   }
 
-  update(id: number, user: User): User {
-    if (id !== user.id) {
-      throw new UserIdNotMatchingException();
-    }
-    if (!this.userRepository.findById(id)) {
+  async update(id: number, user: User): Promise<User> {
+    const userFound = await this.userRepository.findOneBy({ id });
+    if (!userFound) {
       throw new UserNotFoundException(id);
     }
-    return this.userRepository.update(id, user);
+    return await this.userRepository.save({ ...userFound, ...user });
   }
 
-  delete(id: number): void {
-    if (!this.userRepository.findById(id)) {
+  async delete(id: number): Promise<void> {
+    const userFound = await this.userRepository.findOneBy({ id });
+    if (!userFound) {
       throw new UserNotFoundException(id);
     }
-    this.userRepository.delete(id);
+    await this.userRepository.delete(id);
   }
 }

@@ -24,7 +24,7 @@ export class UserManagementController {
   @HttpCode(200)
   async create(@Body() user: User): Promise<User> {
     try {
-      return this.userService.create(user);
+      return await this.userService.create(user);
     } catch (error) {
       if (error instanceof UserAlreadyExistsException) {
         throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
@@ -35,14 +35,18 @@ export class UserManagementController {
 
   @Get()
   async findAll(): Promise<User[]> {
-    return this.userService.findAll();
+    try {
+      return await this.userService.findAll();
+    } catch (error) {
+      throw new HttpException("Internal Server Error", HttpStatus.INTERNAL_SERVER_ERROR);
+    }
   }
 
   @Put(":id")
   @HttpCode(201)
   async update(@Param("id") id: string, @Body() user: User): Promise<User> {
     try {
-      return this.userService.update(Number(id), user);
+      return await this.userService.update(Number(id), user);
     } catch (error) {
       if (error instanceof UserNotFoundException) {
         throw new HttpException(error.message, HttpStatus.NOT_FOUND);
@@ -55,7 +59,7 @@ export class UserManagementController {
   @HttpCode(204)
   async delete(@Param("id") id: number): Promise<void> {
     try {
-      this.userService.delete(id);
+      await this.userService.delete(id);
     } catch (error) {
       if (error instanceof UserNotFoundException) {
         throw new HttpException(error.message, HttpStatus.NOT_FOUND);

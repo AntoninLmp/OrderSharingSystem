@@ -9,14 +9,19 @@ export enum UserRole {
 export class User {
   @PrimaryGeneratedColumn()
   id: number;
+
   @Column()
   name: string;
+
   @Column()
   email: string;
+
   @Column({ nullable: true })
   phoneNumber: string;
+
   @Column({ type: "enum", enum: UserRole, default: UserRole.CUSTOMER })
   role: UserRole;
+
   @Column({ nullable: true })
   assignedParkId: number;
 }

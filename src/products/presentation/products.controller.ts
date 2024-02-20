@@ -11,15 +11,15 @@ import {
   Post,
   Put,
 } from "@nestjs/common";
-import { IProductService } from "../application/product.service.interface";
+import { IProductsService } from "../application/products.service.interface";
 import { Product } from "../domain/product.entity";
 import { CreateOrUpdateProductDto } from "../dto/createOrUpdateProduct.dto";
 import { ProductAlreadyExistsException } from "../exception/productAlreadyExists.exception";
 import { ProductNotFoundException } from "../exception/productNotFound.exception";
 
 @Controller("products")
-export class ProductController {
-  constructor(@Inject("IProductService") private readonly productService: IProductService) {}
+export class ProductsController {
+  constructor(@Inject("IProductsService") private readonly productService: IProductsService) {}
 
   @Post()
   @HttpCode(200)

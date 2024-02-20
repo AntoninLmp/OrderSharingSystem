@@ -1,10 +1,10 @@
 import { Module } from "@nestjs/common";
 import { ConfigModule, ConfigService } from "@nestjs/config";
 import { TypeOrmModule } from "@nestjs/typeorm";
-import { Product } from "./product/domain/product.entity";
-import { ProductModule } from "./product/product.module";
-import { User } from "./userManagement/domain/user.entity";
-import { UserModule } from "./userManagement/userManagement.module";
+import { Product } from "./products/domain/product.entity";
+import { ProductsModule } from "./products/products.module";
+import { User } from "./users/domain/user.entity";
+import { UsersModule } from "./users/users.module";
 
 @Module({
   imports: [
@@ -23,8 +23,8 @@ import { UserModule } from "./userManagement/userManagement.module";
       }),
       inject: [ConfigService],
     }),
-    ProductModule,
-    UserModule,
+    ProductsModule,
+    UsersModule,
   ],
 })
 export class AppModule {}

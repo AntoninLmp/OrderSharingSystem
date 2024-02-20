@@ -11,14 +11,14 @@ import {
   Post,
   Put,
 } from "@nestjs/common";
-import { IUserManagementService } from "../application/userManagement.service.interface";
+import { IUsersService } from "../application/users.service.interface";
 import { User } from "../domain/user.entity";
 import { UserAlreadyExistsException } from "../exception/UserAlreadyExists.exception";
 import { UserNotFoundException } from "../exception/UserNotFoundException.exception";
 
-@Controller("userManagement")
-export class UserManagementController {
-  constructor(@Inject("IUserManagementService") private readonly userService: IUserManagementService) {}
+@Controller("users")
+export class UsersController {
+  constructor(@Inject("IUsersService") private readonly userService: IUsersService) {}
 
   @Post()
   @HttpCode(200)

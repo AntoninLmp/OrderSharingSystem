@@ -4,10 +4,10 @@ import { Repository } from "typeorm";
 import { Product } from "../domain/product.entity";
 import { ProductAlreadyExistsException } from "../exception/productAlreadyExists.exception";
 import { ProductNotFoundException } from "../exception/productNotFound.exception";
-import { IProductService } from "./product.service.interface";
+import { IProductsService } from "./products.service.interface";
 
 @Injectable()
-export class ProductService implements IProductService {
+export class ProductsService implements IProductsService {
   constructor(
     @InjectRepository(Product)
     private readonly productRepository: Repository<Product>,

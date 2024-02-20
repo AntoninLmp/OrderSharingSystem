@@ -9,7 +9,7 @@ import {
   Inject,
   Param,
   Post,
-  Put
+  Put,
 } from "@nestjs/common";
 import { IOrderService } from "../application/order.service.interface";
 import { Order } from "../domain/order.entity";

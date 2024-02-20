@@ -13,15 +13,15 @@ export class Order {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column({ type: "decimal" })
+  @Column({ type: "decimal", default: 0 })
   totalAmount: number;
 
   @Column({ type: "enum", enum: OrderStatus, default: OrderStatus.INPROGRESS })
   status: OrderStatus;
 
-  @OneToMany(() => User, (user) => user.id, { cascade: true })
+  @OneToMany(() => User, (user) => user.id)
   contributor: User[];
 
-  @OneToMany(() => OrderItem, (orderItem) => orderItem.id, { cascade: true })
+  @OneToMany(() => OrderItem, (orderItem) => orderItem.id)
   items: OrderItem[];
 }

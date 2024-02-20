@@ -1,4 +1,5 @@
 import { Column, Entity, PrimaryGeneratedColumn } from "typeorm";
+import { Exclude } from "class-transformer";
 
 export enum UserRole {
   AGENT = "agent",
@@ -8,6 +9,7 @@ export enum UserRole {
 @Entity("users")
 export class User {
   @PrimaryGeneratedColumn()
+  @Exclude()
   id: number;
 
   @Column()
@@ -15,6 +17,10 @@ export class User {
 
   @Column()
   email: string;
+
+  @Column()
+  @Exclude()
+  password: string;
 
   @Column({ nullable: true })
   phoneNumber: string;

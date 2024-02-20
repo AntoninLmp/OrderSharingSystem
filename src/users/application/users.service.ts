@@ -4,6 +4,7 @@ import { Repository } from "typeorm";
 import { User } from "../domain/user.entity";
 import { UserAlreadyExistsException } from "../exception/UserAlreadyExists.exception";
 import { UserNotFoundException } from "../exception/UserNotFoundException.exception";
+import * as bcrypt from "bcrypt";
 import { IUsersService } from "./users.service.interface";
 
 @Injectable()
@@ -21,6 +22,10 @@ export class UsersService implements IUsersService {
     if (userFound) {
       throw new UserAlreadyExistsException(userFound.id);
     }
+
+    const saltOrRounds = 10;
+    user.password = await bcrypt.hash(user.password, saltOrRounds);
+
     return await this.userRepository.save(user);
   }
 

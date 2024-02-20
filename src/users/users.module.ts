@@ -1,6 +1,6 @@
 import { Module } from "@nestjs/common";
 import { TypeOrmModule } from "@nestjs/typeorm";
-import { UserManagementService } from "./application/userManagement.service";
+import { UsersService } from "./application/users.service";
 import { User } from "./domain/user.entity";
 import { UsersController } from "./presentation/users.controller";
 
@@ -10,7 +10,7 @@ import { UsersController } from "./presentation/users.controller";
   providers: [
     {
       provide: "IUsersService",
-      useClass: UserManagementService,
+      useClass: UsersService,
     },
   ],
 })

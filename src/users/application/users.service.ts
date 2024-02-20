@@ -7,7 +7,7 @@ import { UserNotFoundException } from "../exception/UserNotFoundException.except
 import { IUsersService } from "./users.service.interface";
 
 @Injectable()
-export class UserManagementService implements IUsersService {
+export class UsersService implements IUsersService {
   constructor(@InjectRepository(User) private readonly userRepository: Repository<User>) {}
 
   async create(user: User): Promise<User> {

@@ -1,3 +1,4 @@
+import { Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
 import { Order } from "../domain/order.entity";
@@ -5,6 +6,7 @@ import { OrderAlreadyExistsException } from "../exception/OrderAlreadyExistsExce
 import { OrderNotFoundException } from "../exception/OrderNotFoundException.exception";
 import { IOrderService } from "./order.service.interface";
 
+@Injectable()
 export class OrderService implements IOrderService {
   constructor(
     @InjectRepository(Order)
@@ -26,6 +28,7 @@ export class OrderService implements IOrderService {
   async findAll(): Promise<Order[]> {
     return await this.orderRepository.find();
   }
+
   async findOrderById(id: number): Promise<Order> {
     const orderFound = await this.orderRepository.findOneBy({ id });
     if (!orderFound) {

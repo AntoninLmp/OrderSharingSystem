@@ -20,7 +20,7 @@ export class UsersService implements IUsersService {
     });
 
     if (userFound) {
-      throw new UserAlreadyExistsException(userFound.id);
+      throw new UserAlreadyExistsException(userFound.email);
     }
 
     const saltOrRounds = 10;

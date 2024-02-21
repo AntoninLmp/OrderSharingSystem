@@ -1,4 +1,4 @@
-import { Column, Entity, JoinColumn, ManyToOne, OneToMany, OneToOne, PrimaryGeneratedColumn } from "typeorm";
+import { Column, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColumn } from "typeorm";
 import { Product } from "../../product/domain/product.entity";
 import { Order } from "./order.entity";
 
@@ -16,7 +16,10 @@ export class OrderItem {
   @JoinColumn({ name: "order_id" })
   order: Order;
 
-  @OneToOne(() => Product, (product) => product.id)
+
+  @Column({ name: "product_id" })
+  product_id: number;
+  @ManyToOne(() => Product, (product) => product.id)
   @JoinColumn({ name: "product_id" })
   product: Product;
 }

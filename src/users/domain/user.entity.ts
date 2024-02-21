@@ -29,7 +29,7 @@ export class User {
   @Column({ type: "enum", enum: UserRole, default: UserRole.CUSTOMER })
   role: UserRole;
 
-  @Column({ name: "order_id" })
+  @Column({ name: "order_id", nullable: true })
   order_id: number;
   @ManyToOne(() => Order, (order) => order.id)
   @JoinColumn({ name: "order_id" })

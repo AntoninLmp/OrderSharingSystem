@@ -1,9 +1,9 @@
 import { Module } from "@nestjs/common";
 import { ConfigModule, ConfigService } from "@nestjs/config";
 import { TypeOrmModule } from "@nestjs/typeorm";
-import { Order } from "./order/domain/order.entity";
-import { OrderItem } from "./order/domain/orderItem.entity";
-import { OrdersModule } from "./order/orders.module";
+import { Order } from "./orders/domain/order.entity";
+import { OrderItem } from "./orders/domain/orderItem.entity";
+import { OrdersModule } from "./orders/orders.module";
 import { Product } from "./products/domain/product.entity";
 import { ProductsModule } from "./products/products.module";
 import { User } from "./users/domain/user.entity";

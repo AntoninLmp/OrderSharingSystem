@@ -1,6 +1,6 @@
 import { Exclude } from "class-transformer";
 import { Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
-import { Order } from "../../order/domain/order.entity";
+import { Order } from "../../orders/domain/order.entity";
 
 export enum UserRole {
   AGENT = "agent",

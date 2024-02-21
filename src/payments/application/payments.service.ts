@@ -23,7 +23,6 @@ export class PaymentsService implements IPaymentService {
     if (!orderFound && orderFound !== null) {
       throw new OrderNotFoundException(orderId);
     }
-    console.log("orderFound", orderFound);
     const userFound = await this.userRepository.findOneBy({ id: userId });
     if (!userFound && userFound !== null) {
       throw new UserNotFoundException(userId);

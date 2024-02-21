@@ -2,7 +2,6 @@ import {
   Body,
   Controller,
   Delete,
-  Get,
   HttpCode,
   HttpException,
   HttpStatus,
@@ -35,15 +34,6 @@ export class UsersController {
     }
   }
 
-  @Get()
-  async findAll(): Promise<User[]> {
-    try {
-      return await this.userService.findAll();
-    } catch (error) {
-      throw new HttpException("Internal Server Error", HttpStatus.INTERNAL_SERVER_ERROR);
-    }
-  }
-
   @Put(":id")
   async update(@Param("id") id: string, @Body() createOrUpdateUserDto: CreateOrUpdateUserDto): Promise<User> {
     try {
@@ -61,7 +51,7 @@ export class UsersController {
   @HttpCode(204)
   async delete(@Param("id") id: number): Promise<void> {
     try {
-      await this.userService.delete(id);
+      await this.usersService.delete(id);
     } catch (error) {
       if (error instanceof UserNotFoundException) {
         throw new HttpException(error.message, HttpStatus.NOT_FOUND);

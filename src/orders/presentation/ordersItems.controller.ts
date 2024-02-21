@@ -14,6 +14,7 @@ import { ProductNotFoundException } from "../../products/exception/productNotFou
 import { IOrderService } from "../application/orders.service.interface";
 import { IOrderItemService } from "../application/ordersItems.service.interface";
 import { OrderItem } from "../domain/orderItem.entity";
+import { CreateOrUpdateOrdersItemsDto } from "../dto/createOrUpdateOrdersItems.dto";
 import { OrderNotFoundException } from "../exception/OrdersNotFoundException.exception";
 
 @Controller("ordersItem")
@@ -25,9 +26,12 @@ export class OrdersItemsController {
 
   @Post(":userId")
   @HttpCode(200)
-  async createItem(@Param("userId") userId: number, @Body() orderItem: OrderItem): Promise<OrderItem> {
+  async createItem(
+    @Param("userId") userId: number,
+    @Body() createOrUpdateOrdersItemsDto: CreateOrUpdateOrdersItemsDto,
+  ): Promise<OrderItem> {
     try {
-      return await this.orderItemService.createItem(userId, orderItem);
+      return await this.orderItemService.createItem(userId, createOrUpdateOrdersItemsDto as OrderItem);
     } catch (error) {
       if (error instanceof OrderNotFoundException) {
         throw new HttpException(error.message, HttpStatus.NOT_FOUND);

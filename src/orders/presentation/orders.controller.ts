@@ -13,6 +13,7 @@ import {
 } from "@nestjs/common";
 import { IOrderService } from "../application/orders.service.interface";
 import { Order } from "../domain/order.entity";
+import { CreateOrUpdateOrdersDto } from "../dto/createOrUpdateOrders.dto";
 import { OrderAlreadyExistsException } from "../exception/OrdersAlreadyExistsException.exception";
 
 @Controller("orders")
@@ -21,9 +22,9 @@ export class OrdersController {
 
   @Post()
   @HttpCode(200)
-  async create(@Body() order: Order): Promise<Order> {
+  async create(@Body() createOrUpdateOrdersDto: CreateOrUpdateOrdersDto): Promise<Order> {
     try {
-      return await this.orderService.create(order);
+      return await this.orderService.create(createOrUpdateOrdersDto as Order);
     } catch (error) {
       if (error instanceof OrderAlreadyExistsException) {
         throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
@@ -53,9 +54,9 @@ export class OrdersController {
   }
   @Put(":id")
   @HttpCode(201)
-  async update(@Param("id") id: string, @Body() order: Order): Promise<Order> {
+  async update(@Param("id") id: string, @Body() createOrUpdateOrdersDto: CreateOrUpdateOrdersDto): Promise<Order> {
     try {
-      return await this.orderService.update(Number(id), order);
+      return await this.orderService.update(Number(id), createOrUpdateOrdersDto as Order);
     } catch (error) {
       throw new HttpException("Internal Server Error", HttpStatus.INTERNAL_SERVER_ERROR);
     }

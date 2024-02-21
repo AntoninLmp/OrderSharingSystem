@@ -8,6 +8,7 @@ import { Product } from "./products/domain/product.entity";
 import { ProductsModule } from "./products/products.module";
 import { User } from "./users/domain/user.entity";
 import { UsersModule } from "./users/users.module";
+import { PaymentsModule } from "./payments/payments.module";
 
 @Module({
   imports: [
@@ -29,6 +30,7 @@ import { UsersModule } from "./users/users.module";
     ProductsModule,
     UsersModule,
     OrdersModule,
+    PaymentsModule,
   ],
 })
 export class AppModule {}

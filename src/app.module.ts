@@ -3,7 +3,7 @@ import { ConfigModule, ConfigService } from "@nestjs/config";
 import { TypeOrmModule } from "@nestjs/typeorm";
 import { Order } from "./order/domain/order.entity";
 import { OrderItem } from "./order/domain/orderItem.entity";
-import { OrderModule } from "./order/order.module";
+import { OrdersModule } from "./order/orders.module";
 import { Product } from "./products/domain/product.entity";
 import { ProductsModule } from "./products/products.module";
 import { User } from "./users/domain/user.entity";

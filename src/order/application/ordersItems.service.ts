@@ -1,16 +1,16 @@
 import { Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
-import { Product } from "../../product/domain/product.entity";
-import { ProductNotFoundException } from "../../product/exception/productNotFound.exception";
-import { User } from "../../userManagement/domain/user.entity";
+import { Product } from "../../products/domain/product.entity";
+import { ProductNotFoundException } from "../../products/exception/productNotFound.exception";
+import { User } from "../../users/domain/user.entity";
 import { Order } from "../domain/order.entity";
 import { OrderItem } from "../domain/orderItem.entity";
-import { OrderNotFoundException } from "../exception/OrderNotFoundException.exception";
-import { IOrderItemService } from "./orderItem.service.interface";
+import { OrderNotFoundException } from "../exception/OrdersNotFoundException.exception";
+import { IOrderItemService } from "./ordersItems.service.interface";
 
 @Injectable()
-export class OrderItemService implements IOrderItemService {
+export class OrdersItemsService implements IOrderItemService {
   constructor(
     @InjectRepository(Order)
     private readonly orderRepository: Repository<Order>,

@@ -10,14 +10,14 @@ import {
   Param,
   Post,
 } from "@nestjs/common";
-import { ProductNotFoundException } from "../../product/exception/productNotFound.exception";
-import { IOrderService } from "../application/order.service.interface";
-import { IOrderItemService } from "../application/orderItem.service.interface";
+import { ProductNotFoundException } from "../../products/exception/productNotFound.exception";
+import { IOrderService } from "../application/orders.service.interface";
+import { IOrderItemService } from "../application/ordersItems.service.interface";
 import { OrderItem } from "../domain/orderItem.entity";
-import { OrderNotFoundException } from "../exception/OrderNotFoundException.exception";
+import { OrderNotFoundException } from "../exception/OrdersNotFoundException.exception";
 
 @Controller("ordersItem")
-export class OrderItemController {
+export class OrdersItemsController {
   constructor(
     @Inject("IOrderService") private readonly orderService: IOrderService,
     @Inject("IOrderItemService") private readonly orderItemService: IOrderItemService,

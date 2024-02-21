@@ -1,10 +1,10 @@
 import { Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
+import * as bcrypt from "bcrypt";
 import { Repository } from "typeorm";
 import { User } from "../domain/user.entity";
 import { UserAlreadyExistsException } from "../exception/UserAlreadyExists.exception";
 import { UserNotFoundException } from "../exception/UserNotFoundException.exception";
-import * as bcrypt from "bcrypt";
 import { IUsersService } from "./users.service.interface";
 
 @Injectable()

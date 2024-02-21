@@ -1,5 +1,5 @@
 import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from "typeorm";
-import { User } from "../../userManagement/domain/user.entity";
+import { User } from "../../users/domain/user.entity";
 import { OrderItem } from "./orderItem.entity";
 
 export enum OrderStatus {

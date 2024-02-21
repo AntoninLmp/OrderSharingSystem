@@ -11,12 +11,12 @@ import {
   Post,
   Put,
 } from "@nestjs/common";
-import { IOrderService } from "../application/order.service.interface";
+import { IOrderService } from "../application/orders.service.interface";
 import { Order } from "../domain/order.entity";
-import { OrderAlreadyExistsException } from "../exception/OrderAlreadyExistsException.exception";
+import { OrderAlreadyExistsException } from "../exception/OrdersAlreadyExistsException.exception";
 
 @Controller("orders")
-export class OrderController {
+export class OrdersController {
   constructor(@Inject("IOrderService") private readonly orderService: IOrderService) {}
 
   @Post()

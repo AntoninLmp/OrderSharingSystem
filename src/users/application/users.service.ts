@@ -12,12 +12,7 @@ export class UsersService implements IUsersService {
   constructor(@InjectRepository(User) private readonly userRepository: Repository<User>) {}
 
   async create(user: User): Promise<User> {
-    const userFound = await this.userRepository.findOne({
-      where: {
-        name: user.name,
-        email: user.email,
-      },
-    });
+    const userFound = await this.userRepository.findOneBy({ email: user.email, name: user.name });
 
     if (userFound) {
       throw new UserAlreadyExistsException(userFound.email);

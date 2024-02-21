@@ -13,5 +13,11 @@ import { UsersController } from "./presentation/users.controller";
       useClass: UsersService,
     },
   ],
+  exports: [
+    {
+      provide: "IUsersService",
+      useClass: UsersService,
+    },
+  ],
 })
 export class UsersModule {}

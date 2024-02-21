@@ -25,7 +25,8 @@ export class ProductsController {
   @HttpCode(200)
   async create(@Body() createOrUpdateProductDto: CreateOrUpdateProductDto): Promise<Product> {
     try {
-      return await this.productService.create(createOrUpdateProductDto as Product);
+      const productCreated = await this.productService.create(createOrUpdateProductDto as Product);
+      return new Product(productCreated);
     } catch (error) {
       if (error instanceof ProductAlreadyExistsException) {
         throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
@@ -46,7 +47,8 @@ export class ProductsController {
   @Put(":id")
   async update(@Param("id") id: string, @Body() createOrUpdateProductDto: CreateOrUpdateProductDto): Promise<Product> {
     try {
-      return await this.productService.update(Number(id), createOrUpdateProductDto as Product);
+      const productUpdated = await this.productService.update(Number(id), createOrUpdateProductDto as Product);
+      return new Product(productUpdated);
     } catch (error) {
       if (error instanceof ProductNotFoundException) {
         throw new HttpException(error.message, HttpStatus.NOT_FOUND);

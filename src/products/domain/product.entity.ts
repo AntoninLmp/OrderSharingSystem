@@ -19,4 +19,8 @@ export class Product {
 
   @OneToMany(() => OrderItem, (orderItem) => orderItem.product)
   orderItems: OrderItem[];
+
+  constructor(partial: Partial<Product>) {
+    Object.assign(this, partial);
+  }
 }

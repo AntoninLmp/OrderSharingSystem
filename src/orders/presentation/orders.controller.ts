@@ -15,6 +15,7 @@ import { IOrderService } from "../application/orders.service.interface";
 import { Order } from "../domain/order.entity";
 import { CreateOrUpdateOrdersDto } from "../dto/createOrUpdateOrders.dto";
 import { OrderAlreadyExistsException } from "../exception/OrdersAlreadyExistsException.exception";
+import { OrderNotFoundException } from "../exception/OrdersNotFoundException.exception";
 
 @Controller("orders")
 export class OrdersController {
@@ -39,6 +40,9 @@ export class OrdersController {
     try {
       return await this.orderService.findAll();
     } catch (error) {
+      if (error instanceof OrderNotFoundException) {
+        throw new HttpException(error.message, HttpStatus.NOT_FOUND);
+      }
       throw new HttpException("Internal Server Error", HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }
@@ -49,6 +53,9 @@ export class OrdersController {
     try {
       return await this.orderService.findOrderById(id);
     } catch (error) {
+      if (error instanceof OrderNotFoundException) {
+        throw new HttpException(error.message, HttpStatus.NOT_FOUND);
+      }
       throw new HttpException("Internal Server Error", HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }
@@ -58,6 +65,9 @@ export class OrdersController {
     try {
       return await this.orderService.update(Number(id), createOrUpdateOrdersDto as Order);
     } catch (error) {
+      if (error instanceof OrderNotFoundException) {
+        throw new HttpException(error.message, HttpStatus.NOT_FOUND);
+      }
       throw new HttpException("Internal Server Error", HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }
@@ -67,6 +77,9 @@ export class OrdersController {
     try {
       await this.orderService.delete(id);
     } catch (error) {
+      if (error instanceof OrderNotFoundException) {
+        throw new HttpException(error.message, HttpStatus.NOT_FOUND);
+      }
       throw new HttpException("Internal Server Error", HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }

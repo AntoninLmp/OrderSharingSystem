@@ -13,11 +13,19 @@ export class OrdersService implements IOrderService {
   ) {}
 
   async create(order: Order): Promise<Order> {
-    return await this.orderRepository.save(order);
+    try {
+      return await this.orderRepository.save(order);
+    } catch (error) {
+      throw new Error(error.message);
+    }
   }
 
   async findAll(): Promise<Order[]> {
-    return await this.orderRepository.find();
+    try {
+      return await this.orderRepository.find();
+    } catch (error) {
+      throw new OrderNotFoundException(error.message);
+    }
   }
 
   async findOrderById(id: number): Promise<Order> {

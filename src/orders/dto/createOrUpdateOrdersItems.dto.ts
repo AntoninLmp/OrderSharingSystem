@@ -1,5 +1,8 @@
+import { Product } from "../../products/domain/product.entity";
+import { Order } from "../domain/order.entity";
+
 export class CreateOrUpdateOrdersItemsDto {
-  order_id: number;
-  product_id: number;
+  product: Product;
+  order: Order;
   quantity: number;
 }

@@ -23,31 +23,37 @@ export class OrdersItemsService implements IOrderItemService {
   ) {}
   async createItem(userId: number, orderItem: OrderItem): Promise<OrderItem> {
     // ---- Order && Product must exist ----
-    const orderFound = await this.orderRepository.findOneBy({ id: orderItem.order_id });
+    const orderFound = await this.orderRepository.findBy({
+      id: orderItem.order.id,
+    });
     if (!orderFound && orderFound !== null) {
       throw new OrderNotFoundException(orderItem.order.id);
     }
-    const productFound = await this.productRepository.findOneBy({ id: orderItem.product_id });
+    const productFound = await this.productRepository.findBy({
+      id: orderItem.product.id,
+    });
     if (!productFound && productFound !== null) {
       throw new ProductNotFoundException(orderItem.product.id);
     }
-    const userFound = await this.userRepository.findOneBy({ id: userId });
+    const userFound = await this.userRepository.find({
+      where: { id: userId },
+      relations: ["order"],
+    });
     if (!userFound && userFound !== null) {
       throw new ProductNotFoundException(userId);
     }
     // ---- Update the total amount of the order ----
-    orderFound!.totalAmount =
-      Number(orderFound!.totalAmount) + Number(productFound!.price) * Number(orderItem.quantity);
-    await this.orderRepository.save(orderFound!);
-    // ---- Update the user order_id ----
-    userFound!.order_id = orderFound!.id;
+    orderFound![0].totalAmount =
+      Number(orderFound![0].totalAmount) + Number(productFound![0].price) * Number(orderItem.quantity);
+    await this.orderRepository.save(orderFound![0]);
+    // ---- Associate order with user ----
+    userFound![0].order = orderFound![0];
     await this.userRepository.save(userFound!);
-
     return await this.orderItemRepository.save(orderItem);
   }
 
   async findAllItem(): Promise<OrderItem[]> {
-    return await this.orderItemRepository.find();
+    return await this.orderItemRepository.find({ relations: ["order", "product"] });
   }
 
   async deleteItem(id: number): Promise<void> {

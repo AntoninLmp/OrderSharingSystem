@@ -1,5 +1,5 @@
 import { Exclude } from "class-transformer";
-import { Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
+import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
 import { Order } from "../../orders/domain/order.entity";
 
 export enum UserRole {
@@ -29,12 +29,9 @@ export class User {
   @Column({ type: "enum", enum: UserRole, default: UserRole.CUSTOMER })
   role: UserRole;
 
-  @Column({ name: "order_id", nullable: true })
-  order_id: number;
-  @ManyToOne(() => Order, (order) => order.id)
-  @JoinColumn({ name: "order_id" })
-  order: Order;
-
   @Column({ nullable: true })
   assignedParkId: number;
+
+  @ManyToOne(() => Order, (order) => order.contributors)
+  order: Order;
 }

@@ -19,9 +19,9 @@ export class Order {
   @Column({ type: "enum", enum: OrderStatus, default: OrderStatus.INPROGRESS })
   status: OrderStatus;
 
-  @OneToMany(() => User, (user) => user.id)
-  contributor: User[];
+  @OneToMany(() => User, (user) => user.order)
+  contributors: User[];
 
-  @OneToMany(() => OrderItem, (orderItem) => orderItem.id)
+  @OneToMany(() => OrderItem, (orderItem) => orderItem.order)
   items: OrderItem[];
 }

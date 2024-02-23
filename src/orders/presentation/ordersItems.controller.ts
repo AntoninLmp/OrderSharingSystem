@@ -11,6 +11,7 @@ import {
   Post,
 } from "@nestjs/common";
 import { ProductNotFoundException } from "../../products/exception/productNotFound.exception";
+import { UserNotFoundException } from "../../users/exception/UserNotFoundException.exception";
 import { IOrderService } from "../application/orders.service.interface";
 import { IOrderItemService } from "../application/ordersItems.service.interface";
 import { OrderItem } from "../domain/orderItem.entity";
@@ -26,7 +27,7 @@ export class OrdersItemsController {
 
   @Post(":userId")
   @HttpCode(200)
-  async createItem(
+  async createSingleOrderItem(
     @Param("userId") userId: number,
     @Body() createOrUpdateOrdersItemsDto: CreateOrUpdateOrdersItemsDto,
   ): Promise<OrderItem> {
@@ -37,6 +38,30 @@ export class OrdersItemsController {
         throw new HttpException(error.message, HttpStatus.NOT_FOUND);
       }
       if (error instanceof ProductNotFoundException) {
+        throw new HttpException(error.message, HttpStatus.NOT_FOUND);
+      }
+      if (error instanceof UserNotFoundException) {
+        throw new HttpException(error.message, HttpStatus.NOT_FOUND);
+      }
+      throw new HttpException("Internal Server Error", HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+  }
+  @Post("multiple/:userId")
+  @HttpCode(200)
+  async createMultipleOrdersItem(
+    @Param("userId") userId: number,
+    @Body() createOrUpdateOrdersItemsDto: CreateOrUpdateOrdersItemsDto[],
+  ): Promise<OrderItem[]> {
+    try {
+      return await this.orderItemService.createSeveralItem(userId, createOrUpdateOrdersItemsDto as OrderItem[]);
+    } catch (error) {
+      if (error instanceof OrderNotFoundException) {
+        throw new HttpException(error.message, HttpStatus.NOT_FOUND);
+      }
+      if (error instanceof ProductNotFoundException) {
+        throw new HttpException(error.message, HttpStatus.NOT_FOUND);
+      }
+      if (error instanceof UserNotFoundException) {
         throw new HttpException(error.message, HttpStatus.NOT_FOUND);
       }
       throw new HttpException("Internal Server Error", HttpStatus.INTERNAL_SERVER_ERROR);

@@ -8,6 +8,8 @@ import { Order } from "../domain/order.entity";
 import { OrderItem } from "../domain/orderItem.entity";
 import { OrderNotFoundException } from "../exception/OrdersNotFoundException.exception";
 import { IOrderItemService } from "./ordersItems.service.interface";
+import { UserNotFoundException } from "../../users/exception/UserNotFoundException.exception";
+import { isEmpty } from "@nestjs/common/utils/shared.utils";
 
 @Injectable()
 export class OrdersItemsService implements IOrderItemService {
@@ -26,21 +28,21 @@ export class OrdersItemsService implements IOrderItemService {
     const orderFound = await this.orderRepository.findBy({
       id: orderItem.order.id,
     });
-    if (!orderFound && orderFound !== null) {
+    if (isEmpty(orderFound)) {
       throw new OrderNotFoundException(orderItem.order.id);
     }
     const productFound = await this.productRepository.findBy({
       id: orderItem.product.id,
     });
-    if (!productFound && productFound !== null) {
+    if (isEmpty(productFound)) {
       throw new ProductNotFoundException(orderItem.product.id);
     }
     const userFound = await this.userRepository.find({
       where: { id: userId },
       relations: ["order"],
     });
-    if (!userFound && userFound !== null) {
-      throw new ProductNotFoundException(userId);
+    if (isEmpty(userFound)) {
+      throw new UserNotFoundException(userId);
     }
     // ---- Update the total amount of the order ----
     orderFound![0].totalAmount =
@@ -50,6 +52,27 @@ export class OrdersItemsService implements IOrderItemService {
     userFound![0].order = orderFound![0];
     await this.userRepository.save(userFound!);
     return await this.orderItemRepository.save(orderItem);
+  }
+
+  async createSeveralItem(id: number, orderItems: OrderItem[]): Promise<OrderItem[]> {
+    let orderItem: OrderItem = orderItems[0];
+    try {
+      for (orderItem of orderItems) {
+        await this.createItem(id, orderItem);
+      }
+    } catch (error) {
+      if (error instanceof OrderNotFoundException) {
+        throw new OrderNotFoundException(orderItem.order.id);
+      }
+      if (error instanceof ProductNotFoundException) {
+        throw new ProductNotFoundException(orderItem.product.id);
+      }
+      if (error instanceof UserNotFoundException) {
+        throw new UserNotFoundException(id);
+      }
+      throw new Error(error.message);
+    }
+    return orderItems;
   }
 
   async findAllItem(): Promise<OrderItem[]> {

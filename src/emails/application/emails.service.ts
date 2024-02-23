@@ -12,7 +12,6 @@ export class EmailsService {
         {
           to: user.email,
           subject: "Confirmation of the payment ✔",
-          text: "welcome",
           template: "./confirmation", // `.hbs` extension is appended automatically
           context: {
             // ✏️ filling curly brackets with content

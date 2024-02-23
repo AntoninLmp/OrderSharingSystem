@@ -1,7 +1,7 @@
 import { Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
-import { MailerService } from "@nestjs-modules/mailer";
 import { Repository } from "typeorm";
+import { EmailsService } from "../../emails/application/emails.service";
 import { Order, OrderStatus } from "../../orders/domain/order.entity";
 import { OrderNotFoundException } from "../../orders/exception/OrdersNotFoundException.exception";
 import { User } from "../../users/domain/user.entity";
@@ -9,6 +9,7 @@ import { UserNotFoundException } from "../../users/exception/UserNotFoundExcepti
 import { OrderHasAlreadyBeenPaidException } from "../exception/OrderHasAlreadyBeenPaidException.exception";
 import { UserIsNotAssociatedWithOrderException } from "../exception/UserIsNotAssociatedWithOrderException.exception";
 import { IPaymentService } from "./payments.service.interface";
+import { EmailSendingException } from "../../emails/exception/EmailSendingException.exception";
 
 @Injectable()
 export class PaymentsService implements IPaymentService {
@@ -17,7 +18,7 @@ export class PaymentsService implements IPaymentService {
     private readonly orderRepository: Repository<Order>,
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
-    private readonly mailService: MailerService,
+    private readonly EmailService: EmailsService,
   ) {}
   async payment(orderId: number, userId: number, amount: number): Promise<Order> {
     // ---- Order && User must exist ----
@@ -50,6 +51,12 @@ export class PaymentsService implements IPaymentService {
     }
     await this.orderRepository.save(orderFound!);
 
+    // ---- Send email confirmation of payment ----
+    try {
+      await this.EmailService.sendUserConfirmation(userFound!, amount, orderFound!.totalAmount);
+    } catch (error) {
+      throw new EmailSendingException(error);
+    }
     return orderFound!;
   }
 }

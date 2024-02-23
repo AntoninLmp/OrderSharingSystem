@@ -1,5 +1,6 @@
 import { Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
+import { MailerService } from "@nestjs-modules/mailer";
 import { Repository } from "typeorm";
 import { Order, OrderStatus } from "../../orders/domain/order.entity";
 import { OrderNotFoundException } from "../../orders/exception/OrdersNotFoundException.exception";
@@ -16,6 +17,7 @@ export class PaymentsService implements IPaymentService {
     private readonly orderRepository: Repository<Order>,
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
+    private readonly mailService: MailerService,
   ) {}
   async payment(orderId: number, userId: number, amount: number): Promise<Order> {
     // ---- Order && User must exist ----
@@ -23,11 +25,16 @@ export class PaymentsService implements IPaymentService {
     if (!orderFound && orderFound !== null) {
       throw new OrderNotFoundException(orderId);
     }
-    const userFound = await this.userRepository.findOneBy({ id: userId });
-    if (!userFound && userFound !== null) {
+    const userFound = await this.userRepository.findOne({
+      where: { id: userId },
+      relations: {
+        order: true,
+      },
+    });
+    if (!userFound) {
       throw new UserNotFoundException(userId);
     }
-    if (userFound!.order_id !== orderId) {
+    if (userFound!.order.id !== orderId) {
       throw new UserIsNotAssociatedWithOrderException(userId, orderId);
     }
     if (orderFound!.status === OrderStatus.COMPLETED) {

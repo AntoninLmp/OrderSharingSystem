@@ -247,6 +247,29 @@
 					"response": []
 				}
 			]
+		},
+		{
+			"name": "Payment",
+			"item": [
+				{
+					"name": "UpdatePayment",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "http://localhost:3000/payments/order=1/user=1/amount=60"
+					},
+					"response": []
+				}
+			]
 		}
 	],
 	"event": [

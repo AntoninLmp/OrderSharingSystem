@@ -18,7 +18,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"name\": \"Mojitos\",\r\n    \"description\": \"Cocktail avec du rhum\",\r\n    \"price\": 10\r\n}",
+							"raw": "{\r\n    \"name\": \"Mojito\",\r\n    \"description\": \"Cocktail avec du rhum\",\r\n    \"price\": 15\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -68,7 +68,7 @@
 			]
 		},
 		{
-			"name": "UserManagement",
+			"name": "Users",
 			"item": [
 				{
 					"name": "CreateUser",
@@ -77,7 +77,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"name\": \"Gorges DelaJungle\",\r\n    \"email\": \"g.delajungle@gmail.com\",\r\n    \"phoneNumber\": \"0635489562\",\r\n    \"password\": \"123\"\r\n    //\"role\": \"customer\",\r\n    //\"assignedParkId\": 1\r\n\r\n}",
+							"raw": "{\r\n    \"name\": \"Jean Delasalle\",\r\n    \"email\": \"jeandelasalle@gmail.com\",\r\n    \"phoneNumber\": \"0635489562\",\r\n    \"password\": \"123\"\r\n    //\"role\": \"customer\",\r\n    //\"assignedParkId\": 1\r\n\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -127,7 +127,7 @@
 			]
 		},
 		{
-			"name": "Order",
+			"name": "Orders",
 			"item": [
 				{
 					"name": "GetAllOrder",
@@ -139,34 +139,22 @@
 					"response": []
 				},
 				{
-					"name": "GetOrderById",
-					"protocolProfileBehavior": {
-						"disableBodyPruning": true
-					},
+					"name": "Get OrderById",
 					"request": {
 						"method": "GET",
 						"header": [],
-						"body": {
-							"mode": "raw",
-							"raw": "",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
 						"url": "http://localhost:3000/orders/1"
 					},
 					"response": []
 				},
 				{
-					"name": "CreateOrder",
+					"name": "Create Order",
 					"request": {
 						"method": "POST",
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"totalAmount\": \"0\"\r\n}",
+							"raw": "{\r\n    \"totalAmount\": 0\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -178,13 +166,13 @@
 					"response": []
 				},
 				{
-					"name": "UpdateOrder",
+					"name": "Update Order",
 					"request": {
 						"method": "PUT",
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"id\": 1,\r\n    \"totalAmount\": \"10\"\r\n}",
+							"raw": "{\r\n    \"id\": 1,\r\n    \"totalAmount\": \"20\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -196,47 +184,65 @@
 					"response": []
 				},
 				{
-					"name": "DeleteOrder",
+					"name": "Delete Order",
 					"request": {
 						"method": "DELETE",
 						"header": [],
-						"url": "http://localhost:3000/orders/1"
+						"url": "http://localhost:3000/orders/2"
 					},
 					"response": []
 				},
 				{
-					"name": "GetAllOrderItem",
+					"name": "GetAll OrderItem",
 					"request": {
 						"method": "GET",
 						"header": [],
-						"url": "http://localhost:3000/orders/item"
-					},
-					"response": []
-				},
-				{
-					"name": "CreateOrderItem",
-					"request": {
-						"method": "POST",
-						"header": [],
-						"body": {
-							"mode": "raw",
-							"raw": "{\r\n    \"quantity\": 1,\r\n    \"order_id\": 1,\r\n    \"product_id\": 2\r\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
 						"url": "http://localhost:3000/ordersItem"
 					},
 					"response": []
 				},
 				{
-					"name": "DeleteOrderItem",
+					"name": "Create OrderItem",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"quantity\": 2,\r\n    \"product\" :{\r\n        \"id\": 10\r\n    },\r\n    \"order\": {\r\n        \"id\": 1\r\n    }\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "http://localhost:3000/ordersItem/1"
+					},
+					"response": []
+				},
+				{
+					"name": "Create Several OrderItem",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "[\r\n    {\r\n        \"quantity\": 2,\r\n        \"product\" :{\r\n            \"id\": 2\r\n        },\r\n        \"order\": {\r\n            \"id\": 1\r\n        }\r\n    },\r\n    {\r\n        \"quantity\": 1,\r\n        \"product\" :{\r\n            \"id\": 1\r\n        },\r\n        \"order\": {\r\n            \"id\": 1\r\n    }\r\n}\r\n]\r\n    ",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "http://localhost:3000/ordersItem/multiple/1"
+					},
+					"response": []
+				},
+				{
+					"name": "Delete OrderItem",
 					"request": {
 						"method": "DELETE",
 						"header": [],
-						"url": "http://localhost:3000/orders/items/1"
+						"url": "http://localhost:3000/ordersItem/6"
 					},
 					"response": []
 				}
@@ -271,6 +277,10 @@
 		{
 			"key": "base_url",
 			"value": "http://localhost:3000/"
+		},
+		{
+			"key": "order",
+			"value": "1"
 		}
 	]
 }

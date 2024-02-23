@@ -1,8 +1,6 @@
 import { Module } from "@nestjs/common";
 import { ConfigModule, ConfigService } from "@nestjs/config";
 import { TypeOrmModule } from "@nestjs/typeorm";
-import { MailerModule } from "@nestjs-modules/mailer";
-import { PugAdapter } from "@nestjs-modules/mailer/dist/adapters/pug.adapter";
 import { Order } from "./orders/domain/order.entity";
 import { OrderItem } from "./orders/domain/orderItem.entity";
 import { OrdersModule } from "./orders/orders.module";
@@ -14,7 +12,9 @@ import { UsersModule } from "./users/users.module";
 
 @Module({
   imports: [
-    ConfigModule.forRoot(),
+    ConfigModule.forRoot({
+      isGlobal: true,
+    }),
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule],
       useFactory: (configService: ConfigService) => ({
@@ -28,21 +28,6 @@ import { UsersModule } from "./users/users.module";
         synchronize: true,
       }),
       inject: [ConfigService],
-    }),
-    MailerModule.forRootAsync({
-      useFactory: () => ({
-        transport: "smtps://user@domain.com:pass@smtp.domain.com",
-        defaults: {
-          from: '"nest-modules" <modules@nestjs.com>',
-        },
-        template: {
-          dir: __dirname + "/templates",
-          adapter: new PugAdapter(),
-          options: {
-            strict: true,
-          },
-        },
-      }),
     }),
     ProductsModule,
     UsersModule,

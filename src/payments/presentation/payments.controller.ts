@@ -1,4 +1,5 @@
 import { Controller, HttpCode, HttpException, HttpStatus, Inject, Param, Put } from "@nestjs/common";
+import { EmailSendingException } from "../../emails/exception/EmailSendingException.exception";
 import { Order } from "../../orders/domain/order.entity";
 import { OrderNotFoundException } from "../../orders/exception/OrdersNotFoundException.exception";
 import { UserNotFoundException } from "../../users/exception/UserNotFoundException.exception";
@@ -28,6 +29,9 @@ export class PaymentsController {
       }
       if (error instanceof OrderHasAlreadyBeenPaidException) {
         throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
+      }
+      if (error instanceof EmailSendingException) {
+        throw new HttpException(error.message, HttpStatus.INTERNAL_SERVER_ERROR);
       }
       throw new HttpException("Internal Server Error", HttpStatus.INTERNAL_SERVER_ERROR);
     }

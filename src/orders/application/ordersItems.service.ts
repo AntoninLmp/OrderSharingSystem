@@ -1,15 +1,15 @@
 import { Injectable } from "@nestjs/common";
+import { isEmpty } from "@nestjs/common/utils/shared.utils";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
 import { Product } from "../../products/domain/product.entity";
 import { ProductNotFoundException } from "../../products/exception/productNotFound.exception";
 import { User } from "../../users/domain/user.entity";
+import { UserNotFoundException } from "../../users/exception/UserNotFoundException.exception";
 import { Order } from "../domain/order.entity";
 import { OrderItem } from "../domain/orderItem.entity";
 import { OrderNotFoundException } from "../exception/OrdersNotFoundException.exception";
 import { IOrderItemService } from "./ordersItems.service.interface";
-import { UserNotFoundException } from "../../users/exception/UserNotFoundException.exception";
-import { isEmpty } from "@nestjs/common/utils/shared.utils";
 
 @Injectable()
 export class OrdersItemsService implements IOrderItemService {

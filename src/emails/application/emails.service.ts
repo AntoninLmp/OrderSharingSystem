@@ -6,7 +6,7 @@ import { User } from "../../users/domain/user.entity";
 export class EmailsService {
   constructor(private readonly mailerService: MailerService) {}
 
-  async sendUserConfirmation(user: User, amountPaid: number, remainingAmount: number) {
+  async sendUserConfirmationOfPayment(user: User, amountPaid: number, remainingAmount: number) {
     try {
       await this.mailerService.sendMail(
         {
@@ -28,6 +28,25 @@ export class EmailsService {
           console.log(err);
         }*/
       );
+    } catch (error) {
+      throw new Error(`Failed to send email to ${user.email}: ${error.message}`);
+    }
+  }
+
+  async sendUserRemainingAmount(user: User, payerName: string, amountPaid: number, remainingAmount: number) {
+    try {
+      await this.mailerService.sendMail({
+        to: user.email,
+        subject: "Remaining amount of order 💵",
+        template: "./remainingAmount", // `.hbs` extension is appended automatically
+        context: {
+          // ✏️ filling curly brackets with content
+          name: user.name,
+          payerName: payerName,
+          amountPaid: amountPaid,
+          remainingAmount: remainingAmount,
+        },
+      });
     } catch (error) {
       throw new Error(`Failed to send email to ${user.email}: ${error.message}`);
     }

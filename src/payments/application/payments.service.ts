@@ -2,6 +2,7 @@ import { Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
 import { EmailsService } from "../../emails/application/emails.service";
+import { EmailSendingException } from "../../emails/exception/EmailSendingException.exception";
 import { Order, OrderStatus } from "../../orders/domain/order.entity";
 import { OrderNotFoundException } from "../../orders/exception/OrdersNotFoundException.exception";
 import { User } from "../../users/domain/user.entity";
@@ -9,7 +10,6 @@ import { UserNotFoundException } from "../../users/exception/UserNotFoundExcepti
 import { OrderHasAlreadyBeenPaidException } from "../exception/OrderHasAlreadyBeenPaidException.exception";
 import { UserIsNotAssociatedWithOrderException } from "../exception/UserIsNotAssociatedWithOrderException.exception";
 import { IPaymentService } from "./payments.service.interface";
-import { EmailSendingException } from "../../emails/exception/EmailSendingException.exception";
 
 @Injectable()
 export class PaymentsService implements IPaymentService {
@@ -28,9 +28,7 @@ export class PaymentsService implements IPaymentService {
     }
     const userFound = await this.userRepository.findOne({
       where: { id: userId },
-      relations: {
-        order: true,
-      },
+      relations: { order: true },
     });
     if (!userFound) {
       throw new UserNotFoundException(userId);
@@ -53,7 +51,20 @@ export class PaymentsService implements IPaymentService {
 
     // ---- Send email confirmation of payment ----
     try {
-      await this.EmailService.sendUserConfirmation(userFound!, amount, orderFound!.totalAmount);
+      await this.EmailService.sendUserConfirmationOfPayment(userFound!, amount, orderFound!.totalAmount);
+    } catch (error) {
+      throw new EmailSendingException(error);
+    }
+    // ---- Send email with remaining amount to others ----
+    try {
+      const otherUsersInOrder = await this.userRepository.find({
+        where: { order: orderFound! },
+      });
+      for (const user of otherUsersInOrder) {
+        if (user.id !== userId) {
+          await this.EmailService.sendUserRemainingAmount(user, userFound!.name, amount, orderFound!.totalAmount);
+        }
+      }
     } catch (error) {
       throw new EmailSendingException(error);
     }

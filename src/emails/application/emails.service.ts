@@ -1,9 +1,10 @@
 import { Injectable } from "@nestjs/common";
 import { MailerService } from "@nestjs-modules/mailer";
 import { User } from "../../users/domain/user.entity";
+import { IEmailsService } from "./emails.interface.service";
 
 @Injectable()
-export class EmailsService {
+export class EmailsService implements IEmailsService {
   constructor(private readonly mailerService: MailerService) {}
 
   async sendUserConfirmationOfPayment(user: User, amountPaid: number, remainingAmount: number) {
@@ -14,7 +15,6 @@ export class EmailsService {
           subject: "Confirmation of the payment ✔",
           template: "./confirmation", // `.hbs` extension is appended automatically
           context: {
-            // ✏️ filling curly brackets with content
             name: user.name,
             amountPaid: amountPaid,
             remainingAmount: remainingAmount,
@@ -38,9 +38,8 @@ export class EmailsService {
       await this.mailerService.sendMail({
         to: user.email,
         subject: "Remaining amount of order 💵",
-        template: "./remainingAmount", // `.hbs` extension is appended automatically
+        template: "./remainingAmount",
         context: {
-          // ✏️ filling curly brackets with content
           name: user.name,
           payerName: payerName,
           amountPaid: amountPaid,

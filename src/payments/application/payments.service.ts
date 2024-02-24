@@ -20,7 +20,7 @@ export class PaymentsService implements IPaymentService {
     private readonly userRepository: Repository<User>,
     private readonly EmailService: EmailsService,
   ) {}
-  async payment(orderId: number, userId: number, amount: number): Promise<Order> {
+  async paymentSpecificAmount(orderId: number, userId: number, amount: number): Promise<Order> {
     // ---- Order && User must exist ----
     const orderFound = await this.orderRepository.findOneBy({ id: orderId });
     if (!orderFound && orderFound !== null) {

@@ -19,7 +19,7 @@ export class PaymentsController {
     @Param("amount") amount: number,
   ): Promise<Order> {
     try {
-      return await this.paymentService.payment(Number(orderId), Number(userId), Number(amount));
+      return await this.paymentService.paymentSpecificAmount(Number(orderId), Number(userId), Number(amount));
     } catch (error) {
       if (error instanceof UserNotFoundException || error instanceof OrderNotFoundException) {
         throw new HttpException(error.message, HttpStatus.NOT_FOUND);

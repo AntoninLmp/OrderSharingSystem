@@ -70,4 +70,29 @@ export class PaymentsService implements IPaymentService {
     }
     return orderFound!;
   }
+
+  async paymentTotalAmount(orderId: number, userId: number): Promise<Order> {
+    const orderFound = await this.orderRepository.findOneBy({ id: orderId });
+    if (!orderFound && orderFound !== null) {
+      throw new OrderNotFoundException(orderId);
+    }
+    try {
+      const amount = orderFound!.totalAmount;
+      return await this.paymentSpecificAmount(orderId, userId, amount);
+    } catch (error) {
+      throw error;
+    }
+  }
+  async paymentUserOrder(orderId: number, userId: number): Promise<Order> {
+    const orderFound = await this.orderRepository.findOneBy({ id: orderId });
+    if (!orderFound && orderFound !== null) {
+      throw new OrderNotFoundException(orderId);
+    }
+    try {
+      const amount = orderFound!.totalAmount;
+      return await this.paymentSpecificAmount(orderId, userId, amount);
+    } catch (error) {
+      throw error;
+    }
+  }
 }

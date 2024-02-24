@@ -30,7 +30,7 @@ export class UsersService implements IUsersService {
   }
 
   async findAll(): Promise<User[]> {
-    return await this.userRepository.find();
+    return await this.userRepository.find({ relations: ["order"] });
   }
 
   async update(id: number, user: User): Promise<User> {

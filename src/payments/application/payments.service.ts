@@ -41,7 +41,7 @@ export class PaymentsService implements IPaymentService {
     }
 
     // ---- Payment logic ----
-    if (orderFound!.totalAmount < amount) {
+    if (orderFound!.totalAmount <= amount) {
       orderFound!.totalAmount = 0;
       orderFound!.status = OrderStatus.COMPLETED;
     } else {

@@ -60,3 +60,25 @@ export class PaymentsController {
       throw new HttpException("Internal Server Error", HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }
+  @Put("order=:orderid/user=:userId")
+  @HttpCode(201)
+  async paymentByUserForHimself(@Param("orderid") orderId: number, @Param("userId") userId: number): Promise<Order> {
+    try {
+      return await this.paymentService.paymentUserOrder(Number(orderId), Number(userId));
+    } catch (error) {
+      if (error instanceof UserNotFoundException || error instanceof OrderNotFoundException) {
+        throw new HttpException(error.message, HttpStatus.NOT_FOUND);
+      }
+      if (error instanceof UserIsNotAssociatedWithOrderException) {
+        throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
+      }
+      if (error instanceof OrderHasAlreadyBeenPaidException) {
+        throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
+      }
+      if (error instanceof EmailSendingException) {
+        throw new HttpException(error.message, HttpStatus.INTERNAL_SERVER_ERROR);
+      }
+      throw new HttpException("Internal Server Error", HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+  }
+}

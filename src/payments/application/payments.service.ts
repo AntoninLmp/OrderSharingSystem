@@ -10,12 +10,15 @@ import { UserNotFoundException } from "../../users/exception/UserNotFoundExcepti
 import { OrderHasAlreadyBeenPaidException } from "../exception/OrderHasAlreadyBeenPaidException.exception";
 import { UserIsNotAssociatedWithOrderException } from "../exception/UserIsNotAssociatedWithOrderException.exception";
 import { IPaymentService } from "./payments.service.interface";
+import { OrderItem } from "../../orders/domain/orderItem.entity";
 
 @Injectable()
 export class PaymentsService implements IPaymentService {
   constructor(
     @InjectRepository(Order)
     private readonly orderRepository: Repository<Order>,
+    @InjectRepository(OrderItem)
+    private readonly orderItemRepository: Repository<OrderItem>,
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
     private readonly EmailService: EmailsService,
@@ -84,13 +87,17 @@ export class PaymentsService implements IPaymentService {
     }
   }
   async paymentUserOrder(orderId: number, userId: number): Promise<Order> {
-    const orderFound = await this.orderRepository.findOneBy({ id: orderId });
-    if (!orderFound && orderFound !== null) {
-      throw new OrderNotFoundException(orderId);
+    const orderItemFound = await this.orderItemRepository.find({
+      where: { user: { id: userId } },
+      relations: ["user", "product"],
+    });
+    // ---- Get the amount of the order ----
+    let totalAmountOfOrder = 0;
+    for (const item of orderItemFound) {
+      totalAmountOfOrder += item.quantity * item.product.price;
     }
     try {
-      const amount = orderFound!.totalAmount;
-      return await this.paymentSpecificAmount(orderId, userId, amount);
+      return await this.paymentSpecificAmount(orderId, userId, totalAmountOfOrder);
     } catch (error) {
       throw error;
     }

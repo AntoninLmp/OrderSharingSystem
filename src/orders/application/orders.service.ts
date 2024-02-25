@@ -22,7 +22,9 @@ export class OrdersService implements IOrderService {
 
   async findAll(): Promise<Order[]> {
     try {
-      return await this.orderRepository.find();
+      return await this.orderRepository.find({
+        relations: ["contributors", "items"],
+      });
     } catch (error) {
       throw new OrderNotFoundException(error.message);
     }

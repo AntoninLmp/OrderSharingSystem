@@ -10,7 +10,12 @@ import {
   Param,
   Post,
   Put,
+  UseGuards,
 } from "@nestjs/common";
+import { AuthGuard } from "../../auth/application/auth.guard";
+import { Roles } from "../../auth/application/roles.decorator";
+import { RolesGuard } from "../../auth/application/roles.guard";
+import { UserRole } from "../../users/domain/user.entity";
 import { IProductsService } from "../application/products.service.interface";
 import { Product } from "../domain/product.entity";
 import { CreateOrUpdateProductDto } from "../dto/createOrUpdateProduct.dto";
@@ -23,6 +28,8 @@ export class ProductsController {
 
   @Post()
   @HttpCode(200)
+  @Roles(UserRole.AGENT)
+  @UseGuards(AuthGuard, RolesGuard)
   async create(@Body() createOrUpdateProductDto: CreateOrUpdateProductDto): Promise<Product> {
     try {
       const productCreated = await this.productService.create(createOrUpdateProductDto as Product);
@@ -36,6 +43,7 @@ export class ProductsController {
   }
 
   @Get()
+  @UseGuards(AuthGuard)
   async getAll(): Promise<Product[]> {
     try {
       return await this.productService.findAll();
@@ -45,6 +53,8 @@ export class ProductsController {
   }
 
   @Put(":id")
+  @Roles(UserRole.AGENT)
+  @UseGuards(AuthGuard, RolesGuard)
   async update(@Param("id") id: string, @Body() createOrUpdateProductDto: CreateOrUpdateProductDto): Promise<Product> {
     try {
       const productUpdated = await this.productService.update(Number(id), createOrUpdateProductDto as Product);
@@ -59,6 +69,8 @@ export class ProductsController {
 
   @Delete(":id")
   @HttpCode(204)
+  @Roles(UserRole.AGENT)
+  @UseGuards(AuthGuard, RolesGuard)
   async delete(@Param("id") id: number): Promise<void> {
     try {
       await this.productService.delete(id);

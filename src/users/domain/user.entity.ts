@@ -1,5 +1,6 @@
-import { Column, Entity, PrimaryGeneratedColumn } from "typeorm";
 import { Exclude } from "class-transformer";
+import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
+import { Order } from "../../orders/domain/order.entity";
 
 export enum UserRole {
   AGENT = "agent",
@@ -30,4 +31,7 @@ export class User {
 
   @Column({ nullable: true })
   assignedParkId: number;
+
+  @ManyToOne(() => Order, (order) => order.contributors)
+  order: Order;
 }

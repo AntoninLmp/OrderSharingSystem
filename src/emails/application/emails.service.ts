@@ -3,11 +3,17 @@ import { MailerService } from "@nestjs-modules/mailer";
 import { User } from "../../users/domain/user.entity";
 import { IEmailsService } from "./emails.interface.service";
 
+
 @Injectable()
 export class EmailsService implements IEmailsService {
   constructor(private readonly mailerService: MailerService) {}
 
-  async sendUserConfirmationOfPayment(user: User, amountPaid: number, remainingAmount: number) {
+  async sendUserConfirmationOfPayment(
+    user: User,
+    amountPaid: number,
+    remainingAmount: number,
+    invoice: Buffer,
+  ): Promise<void> {
     try {
       await this.mailerService.sendMail(
         {
@@ -19,6 +25,12 @@ export class EmailsService implements IEmailsService {
             amountPaid: amountPaid,
             remainingAmount: remainingAmount,
           },
+          attachments: [
+            {
+              filename: "Invoice.pdf",
+              content: invoice,
+            },
+          ],
         },
         // FOR DEBUGGING
         /*).then((success) => {

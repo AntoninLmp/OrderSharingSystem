@@ -48,6 +48,15 @@ export class ProductsService implements IProductsService {
     return await this.productRepository.find({ relations: ["bowlingPark"] });
   }
 
+  async findByBowlingPark(bowlingParkId: number): Promise<Product[]> {
+    const products = await this.productRepository.find({
+      where: { bowlingPark: { id: bowlingParkId } },
+      relations: ["bowlingPark"],
+    });
+    console.log(products);
+    return products;
+  }
+
   async update(id: number, product: Product): Promise<Product> {
     const productFound = await this.productRepository.findOneBy({ id });
 

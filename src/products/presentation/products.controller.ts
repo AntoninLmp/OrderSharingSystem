@@ -52,6 +52,14 @@ export class ProductsController {
       throw new HttpException("Internal Server Error", HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }
+  @Get("bowlingPark/:bowlingParkId")
+  async getProductsByBowlingPark(@Param("bowlingParkId") bowlingParkId: number): Promise<Product[]> {
+    try {
+      return await this.productService.findByBowlingPark(Number(bowlingParkId));
+    } catch (error) {
+      throw new HttpException("Internal Server Error", HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+  }
 
   @Put(":id")
   async update(@Param("id") id: string, @Body() createOrUpdateProductDto: CreateOrUpdateProductDto): Promise<Product> {

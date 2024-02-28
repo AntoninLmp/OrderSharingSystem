@@ -4,13 +4,13 @@ import { Repository } from "typeorm";
 import { EmailsService } from "../../emails/application/emails.service";
 import { EmailSendingException } from "../../emails/exception/EmailSendingException.exception";
 import { Order, OrderStatus } from "../../orders/domain/order.entity";
+import { OrderItem } from "../../orders/domain/orderItem.entity";
 import { OrderNotFoundException } from "../../orders/exception/OrdersNotFoundException.exception";
 import { User } from "../../users/domain/user.entity";
 import { UserNotFoundException } from "../../users/exception/UserNotFoundException.exception";
 import { OrderHasAlreadyBeenPaidException } from "../exception/OrderHasAlreadyBeenPaidException.exception";
 import { UserIsNotAssociatedWithOrderException } from "../exception/UserIsNotAssociatedWithOrderException.exception";
 import { IPaymentService } from "./payments.service.interface";
-import { OrderItem } from "../../orders/domain/orderItem.entity";
 
 @Injectable()
 export class PaymentsService implements IPaymentService {

@@ -1,5 +1,6 @@
 import { Module } from "@nestjs/common";
 import { TypeOrmModule } from "@nestjs/typeorm";
+import { BowlingAlley } from "../bowlings/domain/bowlingAlley.entity";
 import { Product } from "../products/domain/product.entity";
 import { User } from "../users/domain/user.entity";
 import { OrdersService } from "./application/orders.service";
@@ -10,7 +11,7 @@ import { OrdersController } from "./presentation/orders.controller";
 import { OrdersItemsController } from "./presentation/ordersItems.controller";
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Order, OrderItem, Product, User])],
+  imports: [TypeOrmModule.forFeature([Order, OrderItem, Product, User, BowlingAlley])],
   controllers: [OrdersController, OrdersItemsController],
   providers: [
     {

@@ -43,6 +43,9 @@ export class BownlingsAlleyService implements IBowlingsAlleyService {
     return await this.bowlingAlleyRepository.save(bowlingAlley);
   }
   async findAll(bowlingId: number): Promise<BowlingAlley[]> {
-    return await this.bowlingAlleyRepository.find({ where: { bowlingPark: { id: bowlingId } } });
+    return await this.bowlingAlleyRepository.find({
+      where: { bowlingPark: { id: bowlingId } },
+      relations: ["bowlingPark"],
+    });
   }
 }

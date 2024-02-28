@@ -10,6 +10,7 @@ import {
   Param,
   Post,
 } from "@nestjs/common";
+import { ProductIsNotPresentInThisBowlingParkException } from "../../products/exception/ProductIsNotPresentInThisBowlingParkException.exception";
 import { ProductNotFoundException } from "../../products/exception/productNotFound.exception";
 import { UserNotFoundException } from "../../users/exception/UserNotFoundException.exception";
 import { IOrderItemService } from "../application/ordersItems.service.interface";
@@ -66,14 +67,15 @@ export class OrdersItemsController {
   }
 
   private handleErrorCreateOrderItem(error: any): HttpException {
-    if (error instanceof OrderNotFoundException) {
+    if (
+      error instanceof OrderNotFoundException ||
+      error instanceof ProductNotFoundException ||
+      error instanceof UserNotFoundException
+    ) {
       throw new HttpException(error.message, HttpStatus.NOT_FOUND);
     }
-    if (error instanceof ProductNotFoundException) {
-      throw new HttpException(error.message, HttpStatus.NOT_FOUND);
-    }
-    if (error instanceof UserNotFoundException) {
-      throw new HttpException(error.message, HttpStatus.NOT_FOUND);
+    if (error instanceof ProductIsNotPresentInThisBowlingParkException) {
+      throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
     }
     throw new HttpException("Internal Server Error", HttpStatus.INTERNAL_SERVER_ERROR);
   }

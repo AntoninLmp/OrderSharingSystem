@@ -1,5 +1,5 @@
 export class BowlingParkAlreadyExistsException extends Error {
-  constructor() {
-    super(" BowlingPark already exists");
+  constructor(name: string, town: string) {
+    super(" Bowling park " + name + " in " + town + " already exists");
   }
 }

@@ -14,12 +14,10 @@ export class BownlingsService implements IBowlingsService {
   ) {}
 
   async create(bowling: BowlingPark): Promise<BowlingPark> {
-    const bowlingFound = await this.bowlingRepository.findOneBy({
-      name: bowling.name,
-      town: bowling.town,
-    });
+    const { name, town } = bowling;
+    const bowlingFound = await this.bowlingRepository.findOneBy({ name: name, town: town });
     if (bowlingFound) {
-      throw new BowlingParkAlreadyExistsException();
+      throw new BowlingParkAlreadyExistsException(name, town);
     }
     return await this.bowlingRepository.save(bowling);
   }
@@ -49,6 +47,6 @@ export class BownlingsService implements IBowlingsService {
     if (!bowlingFound) {
       throw new BowlingParkNotFoundException(bowlingId);
     }
-    await this.bowlingRepository.delete(bowlingId);
+    await this.bowlingRepository.remove(bowlingFound);
   }
 }

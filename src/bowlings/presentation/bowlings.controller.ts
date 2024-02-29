@@ -30,7 +30,7 @@ export class BowlingsController {
   ) {}
 
   @Post()
-  @HttpCode(200)
+  @HttpCode(HttpStatus.OK)
   async createBowlingPark(@Body() createOrUpdateBowlingParkDto: CreateOrUpdateBowlingParkDto): Promise<BowlingPark> {
     try {
       return await this.bowlingService.create(createOrUpdateBowlingParkDto as BowlingPark);
@@ -42,22 +42,25 @@ export class BowlingsController {
     }
   }
 
-  @Post(":id/bowlingAlley")
-  @HttpCode(200)
+  @Post(":bowlingParkId/bowlingAlley")
+  @HttpCode(HttpStatus.OK)
   async createBowlingAlley(
-    @Param("id") id: number,
+    @Param("bowlingParkId") bowlingParkId: number,
     @Body() createOrUpdateBowlingAlleyDto: CreateOrUpdateBowlingAlleyDto,
   ): Promise<BowlingAlley> {
     try {
-      return await this.bowlingAlleyService.create(Number(id), createOrUpdateBowlingAlleyDto as BowlingAlley);
+      return await this.bowlingAlleyService.create(
+        Number(bowlingParkId),
+        createOrUpdateBowlingAlleyDto as BowlingAlley,
+      );
     } catch (error) {
       if (error instanceof BowlingParkNotFoundException) {
         throw new HttpException(error.message, HttpStatus.NOT_FOUND);
       }
-      if (error instanceof BowlingAlleyAlreadyExistsInBowlingParkException) {
-        throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
-      }
-      if (error instanceof BowlingAlleyIncorrectNumberException) {
+      if (
+        error instanceof BowlingAlleyAlreadyExistsInBowlingParkException ||
+        error instanceof BowlingAlleyIncorrectNumberException
+      ) {
         throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
       }
       throw new HttpException("Internal Server Error", HttpStatus.INTERNAL_SERVER_ERROR);
@@ -72,19 +75,19 @@ export class BowlingsController {
       throw new HttpException("Internal Server Error", HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }
-  @Get(":id/bowlingAlley")
-  async getAllAlleyByBowlingPark(@Param("id") id: number): Promise<BowlingAlley[]> {
+  @Get(":bowlingParkId/bowlingAlley")
+  async getAllAlleyByBowlingPark(@Param("bowlingParkId") bowlingParkId: number): Promise<BowlingAlley[]> {
     try {
-      return await this.bowlingAlleyService.findAll(id);
+      return await this.bowlingAlleyService.findAll(bowlingParkId);
     } catch (error) {
       throw new HttpException("Internal Server Error", HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }
 
-  @Get(":id")
-  async getById(@Param("id") id: number): Promise<BowlingPark> {
+  @Get(":bowlingParkId")
+  async getById(@Param("bowlingParkId") bowlingParkId: number): Promise<BowlingPark> {
     try {
-      return await this.bowlingService.findById(id);
+      return await this.bowlingService.findById(bowlingParkId);
     } catch (error) {
       if (error instanceof BowlingParkNotFoundException) {
         throw new HttpException(error.message, HttpStatus.NOT_FOUND);
@@ -93,13 +96,13 @@ export class BowlingsController {
     }
   }
 
-  @Put(":id")
+  @Put(":bowlingParkId")
   async update(
-    @Param("id") id: string,
+    @Param("bowlingParkId") bowlingParkId: string,
     @Body() createOrUpdateBowlingParkDto: CreateOrUpdateBowlingParkDto,
   ): Promise<BowlingPark> {
     try {
-      return await this.bowlingService.update(Number(id), createOrUpdateBowlingParkDto as BowlingPark);
+      return await this.bowlingService.update(Number(bowlingParkId), createOrUpdateBowlingParkDto as BowlingPark);
     } catch (error) {
       if (error instanceof BowlingParkNotFoundException) {
         throw new HttpException(error.message, HttpStatus.NOT_FOUND);
@@ -108,11 +111,11 @@ export class BowlingsController {
     }
   }
 
-  @Delete(":id")
-  @HttpCode(204)
-  async delete(@Param("id") id: number): Promise<void> {
+  @Delete(":bowlingParkId")
+  @HttpCode(HttpStatus.NO_CONTENT)
+  async delete(@Param("bowlingParkId") bowlingParkId: number): Promise<void> {
     try {
-      await this.bowlingService.delete(id);
+      await this.bowlingService.delete(bowlingParkId);
     } catch (error) {
       if (error instanceof BowlingParkNotFoundException) {
         throw new HttpException(error.message, HttpStatus.NOT_FOUND);

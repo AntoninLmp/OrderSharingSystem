@@ -18,8 +18,7 @@ export class BownlingsAlleyService implements IBowlingsAlleyService {
     private readonly bowlingAlleyRepository: Repository<BowlingAlley>,
   ) {}
   async create(bowlingId: number, bowlingAlley: BowlingAlley): Promise<BowlingAlley> {
-    // BowlingPark must exist
-    const bowlingFound = await this.bowlingRepository.findOneBy({ id: bowlingId });
+    const bowlingFound = await this.bowlingRepository.findOneBy({ id: bowlingId }); // BowlingPark must exist
     if (!bowlingFound) {
       throw new BowlingParkNotFoundException(bowlingId);
     }
@@ -31,15 +30,14 @@ export class BownlingsAlleyService implements IBowlingsAlleyService {
     if (!isEmpty(bowlingAlleyFound)) {
       throw new BowlingAlleyAlreadyExistsInBowlingParkException();
     }
-    // Check if number is unique and bewteen 1 and 20
+
     if (bowlingAlley.number < 1 || bowlingAlley.number > 20) {
       throw new BowlingAlleyIncorrectNumberException();
     }
     // TO DO QR Code
     bowlingAlley.qrCode = "TODO";
-
     bowlingAlley.bowlingPark = bowlingFound;
-    console.log("bowlingAlley", bowlingAlley);
+
     return await this.bowlingAlleyRepository.save(bowlingAlley);
   }
   async findAll(bowlingId: number): Promise<BowlingAlley[]> {

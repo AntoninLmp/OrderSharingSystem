@@ -24,19 +24,23 @@ export class PaymentsService implements IPaymentService {
     private readonly userRepository: Repository<User>,
     private readonly EmailService: EmailsService,
   ) {}
-  async paymentSpecificAmount(orderId: number, userId: number, amount: number): Promise<Order> {
+  async paymentSpecificAmount(orderId: number, userId: number, amount: number): Promise<Order | null> {
     const orderFound = await this.findOrder(orderId);
     const userFound = await this.findUser(userId, orderId);
 
-    if (orderFound!.status === OrderStatus.COMPLETED) {
+    if (orderFound!.totalAmount === 0) {
       throw new OrderHasAlreadyBeenPaidException(orderId);
     }
     await this.processPayment(orderFound, amount);
     await this.sendPaymentConfirmationAndRemainingAmountEmails(orderFound, userFound, amount);
+    if (orderFound!.status === OrderStatus.COMPLETED) {
+      await this.resetOrder(orderFound);
+      return null;
+    }
     return orderFound!;
   }
 
-  async paymentTotalAmount(orderId: number, userId: number): Promise<Order> {
+  async paymentTotalAmount(orderId: number, userId: number): Promise<Order | null> {
     try {
       const orderFound = await this.findOrder(orderId);
       const amount = orderFound!.totalAmount;
@@ -45,7 +49,7 @@ export class PaymentsService implements IPaymentService {
       throw error;
     }
   }
-  async paymentUserOrder(orderId: number, userId: number): Promise<Order> {
+  async paymentUserOrder(orderId: number, userId: number): Promise<Order | null> {
     const orderItemFound = await this.orderItemRepository.find({
       where: { user: { id: userId } },
       relations: ["user", "product"],
@@ -61,18 +65,25 @@ export class PaymentsService implements IPaymentService {
       throw error;
     }
   }
-  async paymentInCash(orderId: number, amount: number): Promise<Order> {
+  async paymentInCash(orderId: number, amount: number): Promise<Order | null> {
     const orderFound = await this.findOrder(orderId);
-    if (orderFound!.status === OrderStatus.COMPLETED) {
+    if (orderFound!.totalAmount === 0) {
       throw new OrderHasAlreadyBeenPaidException(orderId);
     }
     await this.processPayment(orderFound, amount);
     await this.sendRemainingAmountEmailsToAllUsers(orderFound, amount);
+    if (orderFound!.status === OrderStatus.COMPLETED) {
+      await this.resetOrder(orderFound);
+      return null;
+    }
     return orderFound!;
   }
 
   private async findOrder(orderId: number): Promise<Order> {
-    const orderFound = await this.orderRepository.findOneBy({ id: orderId });
+    const orderFound = await this.orderRepository.findOne({
+      where: { id: orderId },
+      relations: ["items", "contributors"],
+    });
     if (!orderFound && orderFound !== null) {
       throw new OrderNotFoundException(orderId);
     }
@@ -87,7 +98,7 @@ export class PaymentsService implements IPaymentService {
     if (!userFound) {
       throw new UserNotFoundException(userId);
     }
-    if (userFound.order.id !== orderId) {
+    if (userFound.order!.id !== orderId) {
       throw new UserIsNotAssociatedWithOrderException(userId, orderId);
     }
     return userFound;
@@ -96,11 +107,29 @@ export class PaymentsService implements IPaymentService {
     if (order.totalAmount <= amount) {
       order.totalAmount = 0;
       order.status = OrderStatus.COMPLETED;
-      // TO DO
     } else {
       order.totalAmount = Number(order.totalAmount) - amount;
     }
     await this.orderRepository.save(order);
+  }
+  async resetOrder(order: Order): Promise<void> {
+    // ---- Remove all items from the order ----
+    for (const orderItem of order.items) {
+      await this.orderItemRepository.remove(orderItem);
+    }
+    // ---- Update user from the order ----
+    for (let i = 0; i < order.contributors.length; i++) {
+      const user = await this.userRepository.findOne({ where: { id: order.contributors[i].id }, relations: ["order"] });
+      if (user && user!.order !== null) {
+        user!.order = null;
+        await this.userRepository.save(user!);
+      }
+    }
+    try {
+      await this.orderRepository.remove(order);
+    } catch (error) {
+      console.error("Error deleting order: ", error);
+    }
   }
 
   async sendPaymentConfirmationAndRemainingAmountEmails(order: Order, user: User, amount: number): Promise<void> {
@@ -147,17 +176,17 @@ export class PaymentsService implements IPaymentService {
       doc.fontSize(20).text("Invoice", { align: "center" });
       doc.moveDown();
       // User Information
-      doc.fontSize(12).text(`Invoice ID: ${user.order.id}`);
+      doc.fontSize(12).text(`Invoice ID: ${user.order!.id}`);
       doc.text(`Invoice Date: ${new Date().toLocaleDateString()}`);
       doc.text(`Name: ${user.name}`);
       doc.text(`Email: ${user.email}`);
       doc.text(`Phone Number: ${user.phoneNumber}`);
       doc.moveDown();
       // Order Information
-      doc.text(`Order ID: ${user.order.id}`);
-      doc.text(`Order Status: ${user.order.status}`);
-      doc.text(`Amount Paid: €${amountPaid.toFixed(2)}`);
-      doc.text(`Remaining Balance: €${user.order.totalAmount}`);
+      doc.text(`Order ID: ${user.order!.id}`);
+      doc.text(`Order Status: ${user.order!.status}`);
+      doc.text(`Amount Paid: €${amountPaid}`);
+      doc.text(`Remaining Balance: €${user.order!.totalAmount}`);
       doc.moveDown();
       // Footer
       doc.text("Thank you for your business!", { align: "center" });

@@ -12,15 +12,10 @@ export class UsersService implements IUsersService {
   constructor(@InjectRepository(User) private readonly userRepository: Repository<User>) {}
 
   async create(user: User): Promise<User> {
-    const userFound = await this.userRepository.findOne({
-      where: {
-        name: user.name,
-        email: user.email,
-      },
-    });
+    const userFound = await this.userRepository.findOneBy({ email: user.email, name: user.name });
 
     if (userFound) {
-      throw new UserAlreadyExistsException(userFound.id);
+      throw new UserAlreadyExistsException(userFound.email);
     }
 
     const saltOrRounds = 10;
@@ -29,8 +24,14 @@ export class UsersService implements IUsersService {
     return await this.userRepository.save(user);
   }
 
-  async findAll(): Promise<User[]> {
-    return await this.userRepository.find({ relations: ["order"] });
+  async findByEmail(email: string): Promise<User> {
+    const userFound = await this.userRepository.findOneBy({ email });
+
+    if (!userFound) {
+      throw new UserNotFoundException(undefined, email);
+    }
+
+    return userFound;
   }
 
   async update(id: number, user: User): Promise<User> {
@@ -40,6 +41,8 @@ export class UsersService implements IUsersService {
       throw new UserNotFoundException(id);
     }
 
+    const saltOrRounds = 10;
+    user.password = await bcrypt.hash(user.password, saltOrRounds);
     return await this.userRepository.save({ ...userFound, ...user });
   }
 

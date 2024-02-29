@@ -1,5 +1,5 @@
 export class UserAlreadyExistsException extends Error {
-  constructor(userId: number) {
-    super("User with id " + userId + " already exists");
+  constructor(email: string) {
+    super("User with email " + email + " already exists");
   }
 }

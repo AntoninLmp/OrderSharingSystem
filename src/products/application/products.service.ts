@@ -21,7 +21,7 @@ export class ProductsService implements IProductsService {
     });
 
     if (productFound) {
-      throw new ProductAlreadyExistsException(productFound.id);
+      throw new ProductAlreadyExistsException();
     }
 
     return await this.productRepository.save(product);

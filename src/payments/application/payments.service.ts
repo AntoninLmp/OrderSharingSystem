@@ -1,4 +1,3 @@
-import * as stream from "stream";
 import { Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import * as PDFDocument from "pdfkit";

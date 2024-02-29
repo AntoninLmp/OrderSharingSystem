@@ -11,7 +11,6 @@ import {
   Post,
   Put,
 } from "@nestjs/common";
-import { BowlingAlleyIncorrectNumberException } from "../../bowlings/exception/BowlingAlleyIncorrectNumberException.exception";
 import { BowlingAlleyIsMissingException } from "../../bowlings/exception/BowlingAlleyIsMissingException.exception";
 import { BowlingAlleyNotFoundException } from "../../bowlings/exception/BowlingAlleyNotFoundException.exception";
 import { IOrderService } from "../application/orders.service.interface";

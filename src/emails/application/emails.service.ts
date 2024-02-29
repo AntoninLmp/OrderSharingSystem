@@ -3,7 +3,6 @@ import { MailerService } from "@nestjs-modules/mailer";
 import { User } from "../../users/domain/user.entity";
 import { IEmailsService } from "./emails.interface.service";
 
-
 @Injectable()
 export class EmailsService implements IEmailsService {
   constructor(private readonly mailerService: MailerService) {}

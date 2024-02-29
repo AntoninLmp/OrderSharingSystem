@@ -31,7 +31,8 @@ export class PaymentsService implements IPaymentService {
     if (orderFound!.status === OrderStatus.COMPLETED) {
       throw new OrderHasAlreadyBeenPaidException(orderId);
     }
-    await this.processPayment(orderFound!, userFound!, amount);
+    await this.processPayment(orderFound, amount);
+    await this.sendPaymentConfirmationAndRemainingAmountEmails(orderFound, userFound, amount);
     return orderFound!;
   }
 
@@ -60,6 +61,15 @@ export class PaymentsService implements IPaymentService {
       throw error;
     }
   }
+  async paymentInCash(orderId: number, amount: number): Promise<Order> {
+    const orderFound = await this.findOrder(orderId);
+    if (orderFound!.status === OrderStatus.COMPLETED) {
+      throw new OrderHasAlreadyBeenPaidException(orderId);
+    }
+    await this.processPayment(orderFound, amount);
+    await this.sendRemainingAmountEmailsToAllUsers(orderFound, amount);
+    return orderFound!;
+  }
 
   private async findOrder(orderId: number): Promise<Order> {
     const orderFound = await this.orderRepository.findOneBy({ id: orderId });
@@ -82,7 +92,7 @@ export class PaymentsService implements IPaymentService {
     }
     return userFound;
   }
-  private async processPayment(order: Order, user: User, amount: number): Promise<void> {
+  private async processPayment(order: Order, amount: number): Promise<void> {
     if (order.totalAmount <= amount) {
       order.totalAmount = 0;
       order.status = OrderStatus.COMPLETED;
@@ -91,11 +101,9 @@ export class PaymentsService implements IPaymentService {
       order.totalAmount = Number(order.totalAmount) - amount;
     }
     await this.orderRepository.save(order);
-
-    await this.sendEmails(order, user, amount);
   }
 
-  async sendEmails(order: Order, user: User, amount: number): Promise<void> {
+  async sendPaymentConfirmationAndRemainingAmountEmails(order: Order, user: User, amount: number): Promise<void> {
     try {
       const invoiceBuffer = await this.createInvoice(user, amount);
       await this.EmailService.sendUserConfirmationOfPayment(user, amount, order.totalAmount, invoiceBuffer);
@@ -108,6 +116,16 @@ export class PaymentsService implements IPaymentService {
         if (user.id !== user.id) {
           await this.EmailService.sendUserRemainingAmount(user, user.name, amount, order.totalAmount);
         }
+      }
+    } catch (error) {
+      throw new EmailSendingException(error);
+    }
+  }
+  async sendRemainingAmountEmailsToAllUsers(order: Order, amount: number): Promise<void> {
+    try {
+      const usersInOrder = await this.userRepository.find({ where: { order: order } });
+      for (const user of usersInOrder) {
+        await this.EmailService.sendUserRemainingAmount(user, user.name, amount, order.totalAmount);
       }
     } catch (error) {
       throw new EmailSendingException(error);

@@ -45,6 +45,15 @@ export class PaymentsController {
       this.handlePaymentError(error);
     }
   }
+  @Put("cash/order=:orderid/amount=:amount")
+  @HttpCode(201)
+  async paymentInCash(@Param("orderid") orderId: number, @Param("amount") amount: number): Promise<Order> {
+    try {
+      return await this.paymentService.paymentInCash(Number(orderId), Number(amount));
+    } catch (error) {
+      this.handlePaymentError(error);
+    }
+  }
   private handlePaymentError(error: any): never {
     if (error instanceof UserNotFoundException || error instanceof OrderNotFoundException) {
       throw new HttpException(error.message, HttpStatus.NOT_FOUND);

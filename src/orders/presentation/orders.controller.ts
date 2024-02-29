@@ -11,9 +11,12 @@ import {
   Post,
   Put,
 } from "@nestjs/common";
+import { BowlingAlleyIsMissingException } from "../../bowlings/exception/BowlingAlleyIsMissingException.exception";
+import { BowlingAlleyNotFoundException } from "../../bowlings/exception/BowlingAlleyNotFoundException.exception";
 import { IOrderService } from "../application/orders.service.interface";
 import { Order } from "../domain/order.entity";
 import { CreateOrUpdateOrdersDto } from "../dto/createOrUpdateOrders.dto";
+import { OrderAlreadyAssociateWithBowlingAlleyException } from "../exception/OrderAlreadyAssociateWithBowlingAlleyException.exception";
 import { OrderAlreadyExistsException } from "../exception/OrdersAlreadyExistsException.exception";
 import { OrderNotFoundException } from "../exception/OrdersNotFoundException.exception";
 
@@ -27,7 +30,12 @@ export class OrdersController {
     try {
       return await this.orderService.create(createOrUpdateOrdersDto as Order);
     } catch (error) {
-      if (error instanceof OrderAlreadyExistsException) {
+      if (
+        error instanceof OrderAlreadyExistsException ||
+        error instanceof BowlingAlleyIsMissingException ||
+        error instanceof BowlingAlleyNotFoundException ||
+        error instanceof OrderAlreadyAssociateWithBowlingAlleyException
+      ) {
         throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
       }
       throw new HttpException("Internal Server Error", HttpStatus.INTERNAL_SERVER_ERROR);

@@ -1,6 +1,9 @@
 import { Module } from "@nestjs/common";
 import { ConfigModule, ConfigService } from "@nestjs/config";
 import { TypeOrmModule } from "@nestjs/typeorm";
+import { BowlingsModule } from "./bowlings/bowlings.module";
+import { BowlingAlley } from "./bowlings/domain/bowlingAlley.entity";
+import { BowlingPark } from "./bowlings/domain/bowlingPark.entity";
 import { AuthModule } from "./auth/auth.module";
 import { Order } from "./orders/domain/order.entity";
 import { OrderItem } from "./orders/domain/orderItem.entity";
@@ -25,7 +28,7 @@ import { UsersModule } from "./users/users.module";
         username: configService.get("DB_USER"),
         password: configService.get("DB_PASSWORD"),
         database: configService.get("DB_NAME"),
-        entities: [Product, User, Order, OrderItem],
+        entities: [Product, User, Order, OrderItem, BowlingPark, BowlingAlley],
         synchronize: true,
       }),
       inject: [ConfigService],
@@ -34,6 +37,7 @@ import { UsersModule } from "./users/users.module";
     UsersModule,
     OrdersModule,
     PaymentsModule,
+    BowlingsModule,
     AuthModule,
   ],
 })

@@ -1,5 +1,6 @@
 import { Exclude } from "class-transformer";
-import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from "typeorm";
+import { Column, Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn } from "typeorm";
+import { BowlingPark } from "../../bowlings/domain/bowlingPark.entity";
 import { OrderItem } from "../../orders/domain/orderItem.entity";
 
 @Entity()
@@ -20,6 +21,9 @@ export class Product {
   @OneToMany(() => OrderItem, (orderItem) => orderItem.product)
   orderItems: OrderItem[];
 
+  @ManyToOne(() => BowlingPark, (park) => park.products)
+  bowlingPark: BowlingPark;
+  
   constructor(partial: Partial<Product>) {
     Object.assign(this, partial);
   }

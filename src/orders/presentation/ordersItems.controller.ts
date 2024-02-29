@@ -10,9 +10,9 @@ import {
   Param,
   Post,
 } from "@nestjs/common";
+import { ProductIsNotPresentInThisBowlingParkException } from "../../products/exception/ProductIsNotPresentInThisBowlingParkException.exception";
 import { ProductNotFoundException } from "../../products/exception/productNotFound.exception";
 import { UserNotFoundException } from "../../users/exception/UserNotFoundException.exception";
-import { IOrderService } from "../application/orders.service.interface";
 import { IOrderItemService } from "../application/ordersItems.service.interface";
 import { OrderItem } from "../domain/orderItem.entity";
 import { CreateOrUpdateOrdersItemsDto } from "../dto/createOrUpdateOrdersItems.dto";
@@ -20,10 +20,7 @@ import { OrderNotFoundException } from "../exception/OrdersNotFoundException.exc
 
 @Controller("ordersItem")
 export class OrdersItemsController {
-  constructor(
-    @Inject("IOrderService") private readonly orderService: IOrderService,
-    @Inject("IOrderItemService") private readonly orderItemService: IOrderItemService,
-  ) {}
+  constructor(@Inject("IOrderItemService") private readonly orderItemService: IOrderItemService) {}
 
   @Post(":userId")
   @HttpCode(200)
@@ -34,16 +31,7 @@ export class OrdersItemsController {
     try {
       return await this.orderItemService.createItem(userId, createOrUpdateOrdersItemsDto as OrderItem);
     } catch (error) {
-      if (error instanceof OrderNotFoundException) {
-        throw new HttpException(error.message, HttpStatus.NOT_FOUND);
-      }
-      if (error instanceof ProductNotFoundException) {
-        throw new HttpException(error.message, HttpStatus.NOT_FOUND);
-      }
-      if (error instanceof UserNotFoundException) {
-        throw new HttpException(error.message, HttpStatus.NOT_FOUND);
-      }
-      throw new HttpException("Internal Server Error", HttpStatus.INTERNAL_SERVER_ERROR);
+      throw this.handleErrorCreateOrderItem(error);
     }
   }
   @Post("multiple/:userId")
@@ -55,16 +43,7 @@ export class OrdersItemsController {
     try {
       return await this.orderItemService.createSeveralItem(userId, createOrUpdateOrdersItemsDto as OrderItem[]);
     } catch (error) {
-      if (error instanceof OrderNotFoundException) {
-        throw new HttpException(error.message, HttpStatus.NOT_FOUND);
-      }
-      if (error instanceof ProductNotFoundException) {
-        throw new HttpException(error.message, HttpStatus.NOT_FOUND);
-      }
-      if (error instanceof UserNotFoundException) {
-        throw new HttpException(error.message, HttpStatus.NOT_FOUND);
-      }
-      throw new HttpException("Internal Server Error", HttpStatus.INTERNAL_SERVER_ERROR);
+      throw this.handleErrorCreateOrderItem(error);
     }
   }
 
@@ -85,5 +64,19 @@ export class OrdersItemsController {
     } catch (error) {
       throw new HttpException("Internal Server Error", HttpStatus.INTERNAL_SERVER_ERROR);
     }
+  }
+
+  private handleErrorCreateOrderItem(error: any): HttpException {
+    if (
+      error instanceof OrderNotFoundException ||
+      error instanceof ProductNotFoundException ||
+      error instanceof UserNotFoundException
+    ) {
+      throw new HttpException(error.message, HttpStatus.NOT_FOUND);
+    }
+    if (error instanceof ProductIsNotPresentInThisBowlingParkException) {
+      throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
+    }
+    throw new HttpException("Internal Server Error", HttpStatus.INTERNAL_SERVER_ERROR);
   }
 }

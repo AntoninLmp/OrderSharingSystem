@@ -1,16 +1,17 @@
 import { Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
+import * as PDFDocument from "pdfkit";
 import { Repository } from "typeorm";
 import { EmailsService } from "../../emails/application/emails.service";
 import { EmailSendingException } from "../../emails/exception/EmailSendingException.exception";
 import { Order, OrderStatus } from "../../orders/domain/order.entity";
+import { OrderItem } from "../../orders/domain/orderItem.entity";
 import { OrderNotFoundException } from "../../orders/exception/OrdersNotFoundException.exception";
 import { User } from "../../users/domain/user.entity";
 import { UserNotFoundException } from "../../users/exception/UserNotFoundException.exception";
 import { OrderHasAlreadyBeenPaidException } from "../exception/OrderHasAlreadyBeenPaidException.exception";
 import { UserIsNotAssociatedWithOrderException } from "../exception/UserIsNotAssociatedWithOrderException.exception";
 import { IPaymentService } from "./payments.service.interface";
-import { OrderItem } from "../../orders/domain/orderItem.entity";
 
 @Injectable()
 export class PaymentsService implements IPaymentService {
@@ -29,10 +30,12 @@ export class PaymentsService implements IPaymentService {
     if (!orderFound && orderFound !== null) {
       throw new OrderNotFoundException(orderId);
     }
+    console.log("orderFound", orderFound);
     const userFound = await this.userRepository.findOne({
       where: { id: userId },
       relations: { order: true },
     });
+    console.log("userFound", userFound);
     if (!userFound) {
       throw new UserNotFoundException(userId);
     }
@@ -54,7 +57,8 @@ export class PaymentsService implements IPaymentService {
 
     // ---- Send email confirmation of payment ----
     try {
-      await this.EmailService.sendUserConfirmationOfPayment(userFound!, amount, orderFound!.totalAmount);
+      const invoiceBuffer = await this.createInvoice(userFound, amount!);
+      await this.EmailService.sendUserConfirmationOfPayment(userFound!, amount, orderFound!.totalAmount, invoiceBuffer);
     } catch (error) {
       throw new EmailSendingException(error);
     }
@@ -101,5 +105,44 @@ export class PaymentsService implements IPaymentService {
     } catch (error) {
       throw error;
     }
+  }
+
+  private async createInvoice(user: User, amountPaid: number): Promise<Buffer> {
+    return new Promise((resolve, reject) => {
+      const doc = new PDFDocument();
+      const buffers: Buffer[] = [];
+
+      doc.on("data", buffers.push.bind(buffers));
+      doc.on("end", () => {
+        const pdfData = Buffer.concat(buffers);
+        resolve(pdfData);
+      });
+      doc.on("error", reject);
+
+      // Invoice Header
+      doc.fontSize(20).text("Invoice", { align: "center" });
+      doc.moveDown();
+
+      // User Information
+      doc.fontSize(12).text(`Invoice ID: ${user.order.id}`);
+      doc.text(`Invoice Date: ${new Date().toLocaleDateString()}`);
+      doc.text(`Name: ${user.name}`);
+      doc.text(`Email: ${user.email}`);
+      doc.text(`Phone Number: ${user.phoneNumber}`);
+      doc.moveDown();
+
+      // Order Information
+      doc.text(`Order ID: ${user.order.id}`);
+      doc.text(`Order Status: ${user.order.status}`);
+      doc.text(`Amount Paid: €${amountPaid.toFixed(2)}`);
+      doc.text(`Remaining Balance: €${user.order.totalAmount}`);
+      doc.moveDown();
+
+      // Footer
+      doc.text("Thank you for your business!", { align: "center" });
+
+      // Finalize PDF file
+      doc.end();
+    });
   }
 }

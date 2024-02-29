@@ -1,4 +1,5 @@
-import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from "typeorm";
+import { Column, Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn } from "typeorm";
+import { BowlingAlley } from "../../bowlings/domain/bowlingAlley.entity";
 import { User } from "../../users/domain/user.entity";
 import { OrderItem } from "./orderItem.entity";
 
@@ -18,6 +19,9 @@ export class Order {
 
   @Column({ type: "enum", enum: OrderStatus, default: OrderStatus.INPROGRESS })
   status: OrderStatus;
+
+  @ManyToOne(() => BowlingAlley, (alley) => alley.orders)
+  bowlingAlley: BowlingAlley;
 
   @OneToMany(() => User, (user) => user.order)
   contributors: User[];

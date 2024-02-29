@@ -23,4 +23,8 @@ export class Product {
 
   @ManyToOne(() => BowlingPark, (park) => park.products)
   bowlingPark: BowlingPark;
+  
+  constructor(partial: Partial<Product>) {
+    Object.assign(this, partial);
+  }
 }

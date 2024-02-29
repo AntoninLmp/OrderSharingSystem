@@ -2,7 +2,6 @@ import {
   Body,
   Controller,
   Delete,
-  Get,
   HttpCode,
   HttpException,
   HttpStatus,
@@ -13,18 +12,20 @@ import {
 } from "@nestjs/common";
 import { IUsersService } from "../application/users.service.interface";
 import { User } from "../domain/user.entity";
+import { CreateOrUpdateUserDto } from "../dto/createOrUpdateUser.dto";
 import { UserAlreadyExistsException } from "../exception/UserAlreadyExists.exception";
 import { UserNotFoundException } from "../exception/UserNotFoundException.exception";
 
 @Controller("users")
 export class UsersController {
-  constructor(@Inject("IUsersService") private readonly userService: IUsersService) {}
+  constructor(@Inject("IUsersService") private readonly usersService: IUsersService) {}
 
   @Post()
   @HttpCode(200)
-  async create(@Body() user: User): Promise<User> {
+  async create(@Body() createOrUpdateUserDto: CreateOrUpdateUserDto): Promise<User> {
     try {
-      return await this.userService.create(user);
+      const userCreated = await this.usersService.create(createOrUpdateUserDto as User);
+      return new User(userCreated);
     } catch (error) {
       if (error instanceof UserAlreadyExistsException) {
         throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
@@ -33,20 +34,11 @@ export class UsersController {
     }
   }
 
-  @Get()
-  async findAll(): Promise<User[]> {
-    try {
-      return await this.userService.findAll();
-    } catch (error) {
-      throw new HttpException("Internal Server Error", HttpStatus.INTERNAL_SERVER_ERROR);
-    }
-  }
-
   @Put(":id")
-  @HttpCode(201)
-  async update(@Param("id") id: string, @Body() user: User): Promise<User> {
+  async update(@Param("id") id: string, @Body() createOrUpdateUserDto: CreateOrUpdateUserDto): Promise<User> {
     try {
-      return await this.userService.update(Number(id), user);
+      const userUpdated = await this.usersService.update(Number(id), createOrUpdateUserDto as User);
+      return new User(userUpdated);
     } catch (error) {
       if (error instanceof UserNotFoundException) {
         throw new HttpException(error.message, HttpStatus.NOT_FOUND);
@@ -59,7 +51,7 @@ export class UsersController {
   @HttpCode(204)
   async delete(@Param("id") id: number): Promise<void> {
     try {
-      await this.userService.delete(id);
+      await this.usersService.delete(id);
     } catch (error) {
       if (error instanceof UserNotFoundException) {
         throw new HttpException(error.message, HttpStatus.NOT_FOUND);

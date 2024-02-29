@@ -38,4 +38,8 @@ export class User {
 
   @OneToMany(() => OrderItem, (orderItem) => orderItem.user)
   items: OrderItem[];
+
+  constructor(partial: Partial<User>) {
+    Object.assign(this, partial);
+  }
 }

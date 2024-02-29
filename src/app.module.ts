@@ -4,6 +4,7 @@ import { TypeOrmModule } from "@nestjs/typeorm";
 import { BowlingsModule } from "./bowlings/bowlings.module";
 import { BowlingAlley } from "./bowlings/domain/bowlingAlley.entity";
 import { BowlingPark } from "./bowlings/domain/bowlingPark.entity";
+import { AuthModule } from "./auth/auth.module";
 import { Order } from "./orders/domain/order.entity";
 import { OrderItem } from "./orders/domain/orderItem.entity";
 import { OrdersModule } from "./orders/orders.module";
@@ -37,6 +38,7 @@ import { UsersModule } from "./users/users.module";
     OrdersModule,
     PaymentsModule,
     BowlingsModule,
+    AuthModule,
   ],
 })
 export class AppModule {}

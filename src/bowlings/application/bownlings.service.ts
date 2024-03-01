@@ -15,8 +15,8 @@ export class BownlingsService implements IBowlingsService {
 
   async create(bowling: BowlingPark): Promise<BowlingPark> {
     const { name, town } = bowling;
-    const bowlingFound = await this.bowlingRepository.findOneBy({ name: name, town: town });
-    if (bowlingFound) {
+    const bowlingParkFound = await this.bowlingRepository.findOneBy({ name: name, town: town });
+    if (bowlingParkFound) {
       throw new BowlingParkAlreadyExistsException(name, town);
     }
     return await this.bowlingRepository.save(bowling);
@@ -27,26 +27,26 @@ export class BownlingsService implements IBowlingsService {
   }
 
   async findById(bowlingId: number): Promise<BowlingPark> {
-    const bowlingFound = await this.bowlingRepository.findOneBy({ id: bowlingId });
-    if (!bowlingFound) {
+    const bowlingParkFound = await this.bowlingRepository.findOneBy({ id: bowlingId });
+    if (!bowlingParkFound) {
       throw new BowlingParkNotFoundException(bowlingId);
     }
-    return bowlingFound;
+    return bowlingParkFound;
   }
 
   async update(id: number, bowling: BowlingPark): Promise<BowlingPark> {
-    const bowlingFound = await this.bowlingRepository.findOneBy({ id: id });
-    if (!bowlingFound) {
+    const bowlingParkFound = await this.bowlingRepository.findOneBy({ id: id });
+    if (!bowlingParkFound) {
       throw new BowlingParkNotFoundException(id);
     }
-    return await this.bowlingRepository.save({ ...bowlingFound, ...bowling });
+    return await this.bowlingRepository.save({ ...bowlingParkFound, ...bowling });
   }
 
   async delete(bowlingId: number): Promise<void> {
-    const bowlingFound = await this.bowlingRepository.findOneBy({ id: bowlingId });
-    if (!bowlingFound) {
+    const bowlingParkFound = await this.bowlingRepository.findOneBy({ id: bowlingId });
+    if (!bowlingParkFound) {
       throw new BowlingParkNotFoundException(bowlingId);
     }
-    await this.bowlingRepository.remove(bowlingFound);
+    await this.bowlingRepository.remove(bowlingParkFound);
   }
 }

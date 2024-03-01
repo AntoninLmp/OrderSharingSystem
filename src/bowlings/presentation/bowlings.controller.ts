@@ -21,6 +21,7 @@ import { BowlingAlleyAlreadyExistsInBowlingParkException } from "../exception/Bo
 import { BowlingAlleyIncorrectNumberException } from "../exception/BowlingAlleyIncorrectNumberException.exception";
 import { BowlingParkAlreadyExistsException } from "../exception/BowlingParkAlreadyExistsException.exception";
 import { BowlingParkNotFoundException } from "../exception/BowlingParkNotFoundException.exception";
+import { BowlingAlleyMissingNumberException } from "../exception/BowlingAlleyMissingNumberException.exception";
 
 @Controller("bowlings")
 export class BowlingsController {
@@ -59,7 +60,8 @@ export class BowlingsController {
       }
       if (
         error instanceof BowlingAlleyAlreadyExistsInBowlingParkException ||
-        error instanceof BowlingAlleyIncorrectNumberException
+        error instanceof BowlingAlleyIncorrectNumberException ||
+        error instanceof BowlingAlleyMissingNumberException
       ) {
         throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
       }

@@ -17,23 +17,11 @@ export class PaymentsController {
     @Param("orderid") orderId: number,
     @Param("userId") userId: number,
     @Param("amount") amount: number,
-  ): Promise<Order> {
+  ): Promise<Order | null> {
     try {
       return await this.paymentService.paymentSpecificAmount(Number(orderId), Number(userId), Number(amount));
     } catch (error) {
-      if (error instanceof UserNotFoundException || error instanceof OrderNotFoundException) {
-        throw new HttpException(error.message, HttpStatus.NOT_FOUND);
-      }
-      if (error instanceof UserIsNotAssociatedWithOrderException) {
-        throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
-      }
-      if (error instanceof OrderHasAlreadyBeenPaidException) {
-        throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
-      }
-      if (error instanceof EmailSendingException) {
-        throw new HttpException(error.message, HttpStatus.INTERNAL_SERVER_ERROR);
-      }
-      throw new HttpException("Internal Server Error", HttpStatus.INTERNAL_SERVER_ERROR);
+      this.handlePaymentError(error);
     }
   }
   @Put("total/order=:orderid/user=:userId")
@@ -41,44 +29,44 @@ export class PaymentsController {
   async paymentByUserForOrderWithTotalAmount(
     @Param("orderid") orderId: number,
     @Param("userId") userId: number,
-  ): Promise<Order> {
+  ): Promise<Order | null> {
     try {
       return await this.paymentService.paymentTotalAmount(Number(orderId), Number(userId));
     } catch (error) {
-      if (error instanceof UserNotFoundException || error instanceof OrderNotFoundException) {
-        throw new HttpException(error.message, HttpStatus.NOT_FOUND);
-      }
-      if (error instanceof UserIsNotAssociatedWithOrderException) {
-        throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
-      }
-      if (error instanceof OrderHasAlreadyBeenPaidException) {
-        throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
-      }
-      if (error instanceof EmailSendingException) {
-        throw new HttpException(error.message, HttpStatus.INTERNAL_SERVER_ERROR);
-      }
-      throw new HttpException("Internal Server Error", HttpStatus.INTERNAL_SERVER_ERROR);
+      this.handlePaymentError(error);
     }
   }
   @Put("order=:orderid/user=:userId")
   @HttpCode(201)
-  async paymentByUserForHimself(@Param("orderid") orderId: number, @Param("userId") userId: number): Promise<Order> {
+  async paymentByUserForHimself(
+    @Param("orderid") orderId: number,
+    @Param("userId") userId: number,
+  ): Promise<Order | null> {
     try {
       return await this.paymentService.paymentUserOrder(Number(orderId), Number(userId));
     } catch (error) {
-      if (error instanceof UserNotFoundException || error instanceof OrderNotFoundException) {
-        throw new HttpException(error.message, HttpStatus.NOT_FOUND);
-      }
-      if (error instanceof UserIsNotAssociatedWithOrderException) {
-        throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
-      }
-      if (error instanceof OrderHasAlreadyBeenPaidException) {
-        throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
-      }
-      if (error instanceof EmailSendingException) {
-        throw new HttpException(error.message, HttpStatus.INTERNAL_SERVER_ERROR);
-      }
-      throw new HttpException("Internal Server Error", HttpStatus.INTERNAL_SERVER_ERROR);
+      this.handlePaymentError(error);
     }
+  }
+  @Put("cash/order=:orderid/amount=:amount")
+  @HttpCode(201)
+  async paymentInCash(@Param("orderid") orderId: number, @Param("amount") amount: number): Promise<Order | null> {
+    try {
+      return await this.paymentService.paymentInCash(Number(orderId), Number(amount));
+    } catch (error) {
+      this.handlePaymentError(error);
+    }
+  }
+  private handlePaymentError(error: any): never {
+    if (error instanceof UserNotFoundException || error instanceof OrderNotFoundException) {
+      throw new HttpException(error.message, HttpStatus.NOT_FOUND);
+    }
+    if (error instanceof UserIsNotAssociatedWithOrderException || error instanceof OrderHasAlreadyBeenPaidException) {
+      throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
+    }
+    if (error instanceof EmailSendingException) {
+      throw new HttpException(error.message, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+    throw new HttpException("Internal Server Error", HttpStatus.INTERNAL_SERVER_ERROR);
   }
 }

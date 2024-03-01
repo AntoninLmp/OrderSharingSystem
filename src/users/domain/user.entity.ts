@@ -34,7 +34,7 @@ export class User {
   assignedParkId: number;
 
   @ManyToOne(() => Order, (order) => order.contributors)
-  order: Order;
+  order: Order | null;
 
   @OneToMany(() => OrderItem, (orderItem) => orderItem.user)
   items: OrderItem[];

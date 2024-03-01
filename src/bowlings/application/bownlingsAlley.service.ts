@@ -1,13 +1,17 @@
 import { Injectable } from "@nestjs/common";
 import { isEmpty } from "@nestjs/common/utils/shared.utils";
 import { InjectRepository } from "@nestjs/typeorm";
+import * as qrcode from "qrcode";
 import { Repository } from "typeorm";
 import { BowlingAlley } from "../domain/bowlingAlley.entity";
 import { BowlingPark } from "../domain/bowlingPark.entity";
-import { BowlingAlleyAlreadyExistsInBowlingParkException } from "../exception/BowlingAlleyAlreadyExistsInBowlingParkException.exception";
+import {
+  BowlingAlleyAlreadyExistsInBowlingParkException
+} from "../exception/BowlingAlleyAlreadyExistsInBowlingParkException.exception";
 import { BowlingAlleyIncorrectNumberException } from "../exception/BowlingAlleyIncorrectNumberException.exception";
 import { BowlingParkNotFoundException } from "../exception/BowlingParkNotFoundException.exception";
 import { IBowlingsAlleyService } from "./bownlingsAlley.interface.service";
+import { BowlingAlleyMissingNumberException } from "../exception/BowlingAlleyMissingNumberException.exception";
 
 @Injectable()
 export class BownlingsAlleyService implements IBowlingsAlleyService {
@@ -23,6 +27,9 @@ export class BownlingsAlleyService implements IBowlingsAlleyService {
       throw new BowlingParkNotFoundException(bowlingId);
     }
     // BowlingAlley must not exist in the BowlingPark
+    if (bowlingAlley.number === undefined) {
+      throw new BowlingAlleyMissingNumberException();
+    }
     const bowlingAlleyFound = await this.bowlingAlleyRepository.find({
       where: { number: bowlingAlley.number, bowlingPark: { id: bowlingId } },
       relations: ["bowlingPark"],
@@ -34,8 +41,8 @@ export class BownlingsAlleyService implements IBowlingsAlleyService {
     if (bowlingAlley.number < 1 || bowlingAlley.number > 20) {
       throw new BowlingAlleyIncorrectNumberException();
     }
-    // TO DO QR Code
-    bowlingAlley.qrCode = "TODO";
+    bowlingAlley.qrCode = await this.generateQRCode(bowlingAlley.number.toString(), bowlingId.toString());
+    console.log("FINI ", bowlingAlley);
     bowlingAlley.bowlingPark = bowlingFound;
 
     return await this.bowlingAlleyRepository.save(bowlingAlley);
@@ -45,5 +52,14 @@ export class BownlingsAlleyService implements IBowlingsAlleyService {
       where: { bowlingPark: { id: bowlingId } },
       relations: ["bowlingPark"],
     });
+  }
+  private async generateQRCode(bowlingAlley: string, bowlingId: string): Promise<string> {
+    try {
+      // Generate QR code as a data URL
+      return await qrcode.toDataURL(bowlingAlley + "-" + bowlingId);
+    } catch (error) {
+      console.error("Error generating QR code:", error);
+      throw new Error("Failed to generate QR code");
+    }
   }
 }

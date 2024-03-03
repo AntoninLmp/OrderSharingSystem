@@ -1,11 +1,10 @@
 {
 	"info": {
-		"_postman_id": "80feb725-28db-41d7-97ab-2f56eaa38f2c",
+		"_postman_id": "769067a4-3b7b-4ea3-bbfb-a16dc01e9696",
 		"name": "SharingOrderSystem-M2",
 		"description": "# 🚀 Get started here\n\nThis template guides you through CRUD operations (GET, POST, PUT, DELETE), variables, and tests.\n\n## 🔖 **How to use this template**\n\n#### **Step 1: Send requests**\n\nRESTful APIs allow you to perform CRUD operations using the POST, GET, PUT, and DELETE HTTP methods.\n\nThis collection contains each of these [request](https://learning.postman.com/docs/sending-requests/requests/) types. Open each request and click \"Send\" to see what happens.\n\n#### **Step 2: View responses**\n\nObserve the response tab for status code (200 OK), response time, and size.\n\n#### **Step 3: Send new Body data**\n\nUpdate or add new data in \"Body\" in the POST request. Typically, Body data is also used in PUT request.\n\n```\n{\n    \"name\": \"Add your name in the body\"\n}\n\n ```\n\n#### **Step 4: Update the variable**\n\nVariables enable you to store and reuse values in Postman. We have created a [variable](https://learning.postman.com/docs/sending-requests/variables/) called `base_url` with the sample request [https://postman-api-learner.glitch.me](https://postman-api-learner.glitch.me). Replace it with your API endpoint to customize this collection.\n\n#### **Step 5: Add tests in the \"Tests\" tab**\n\nTests help you confirm that your API is working as expected. You can write test scripts in JavaScript and view the output in the \"Test Results\" tab.\n\n<img src=\"https://content.pstmn.io/b5f280a7-4b09-48ec-857f-0a7ed99d7ef8/U2NyZWVuc2hvdCAyMDIzLTAzLTI3IGF0IDkuNDcuMjggUE0ucG5n\">\n\n## 💪 Pro tips\n\n- Use folders to group related requests and organize the collection.\n- Add more [scripts](https://learning.postman.com/docs/writing-scripts/intro-to-scripts/) in \"Tests\" to verify if the API works as expected and execute workflows.\n    \n\n## 💡Related templates\n\n[API testing basics](https://go.postman.co/redirect/workspace?type=personal&collectionTemplateId=e9a37a28-055b-49cd-8c7e-97494a21eb54&sourceTemplateId=ddb19591-3097-41cf-82af-c84273e56719)  \n[API documentation](https://go.postman.co/redirect/workspace?type=personal&collectionTemplateId=e9c28f47-1253-44af-a2f3-20dce4da1f18&sourceTemplateId=ddb19591-3097-41cf-82af-c84273e56719)  \n[Authorization methods](https://go.postman.co/redirect/workspace?type=personal&collectionTemplateId=31a9a6ed-4cdf-4ced-984c-d12c9aec1c27&sourceTemplateId=ddb19591-3097-41cf-82af-c84273e56719)",
-		"schema": "https://schema.getpostman.com/json/collection/v2.0.0/collection.json",
-		"_exporter_id": "24045284",
-		"_collection_link": "https://red-star-414103.postman.co/workspace/Team-Workspace~b9184f88-996f-477d-8196-4929c77c0653/collection/24045284-80feb725-28db-41d7-97ab-2f56eaa38f2c?action=share&source=collection_link&creator=24045284"
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "32401415"
 	},
 	"item": [
 		{
@@ -14,27 +13,66 @@
 				{
 					"name": "Create",
 					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{userToken}}",
+									"type": "string"
+								}
+							]
+						},
 						"method": "POST",
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"name\": \"Mojitos\",\r\n    \"description\": \"Cocktail avec du rhum\",\r\n    \"price\": 19,\r\n    \"bowlingPark\":{\r\n        \"id\": 1\r\n    }\r\n}",
+							"raw": "{\r\n    \"name\": \"{{productName}}\",\r\n    \"description\": \"{{productDescription}}\",\r\n    \"price\": {{productPrice}},\r\n    \"bowlingPark\": 2\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
 								}
 							}
 						},
-						"url": "http://localhost:3000/products"
+						"url": {
+							"raw": "{{base_url}}/products",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"products"
+							]
+						}
 					},
 					"response": []
 				},
 				{
 					"name": "GetAll",
 					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{userToken}}",
+									"type": "string"
+								}
+							]
+						},
 						"method": "GET",
 						"header": [],
-						"url": "http://localhost:3000/products/"
+						"url": {
+							"raw": "http://localhost:3000/products/",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"products",
+								""
+							]
+						}
 					},
 					"response": []
 				},
@@ -44,7 +82,7 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "http://localhost:3000/products/bowlingPark?bowlingParkId=1",
+							"raw": "http://localhost:3000/products/bowlingPark/2",
 							"protocol": "http",
 							"host": [
 								"localhost"
@@ -52,13 +90,8 @@
 							"port": "3000",
 							"path": [
 								"products",
-								"bowlingPark"
-							],
-							"query": [
-								{
-									"key": "bowlingParkId",
-									"value": "1"
-								}
+								"bowlingPark",
+								"2"
 							]
 						}
 					},
@@ -67,6 +100,16 @@
 				{
 					"name": "Update",
 					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{userToken}}",
+									"type": "string"
+								}
+							]
+						},
 						"method": "PUT",
 						"header": [],
 						"body": {
@@ -78,7 +121,18 @@
 								}
 							}
 						},
-						"url": "http://localhost:3000/products/150"
+						"url": {
+							"raw": "http://localhost:3000/products/1",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"products",
+								"1"
+							]
+						}
 					},
 					"response": []
 				},
@@ -87,7 +141,18 @@
 					"request": {
 						"method": "DELETE",
 						"header": [],
-						"url": "http://localhost:3000/products/1"
+						"url": {
+							"raw": "http://localhost:3000/products/1",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"products",
+								"1"
+							]
+						}
 					},
 					"response": []
 				}
@@ -103,23 +168,22 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"name\": \"Antonin Lampin\",\r\n    \"email\": \"antonin.lampin@efrei.net\",\r\n    \"phoneNumber\": \"0635489562\",\r\n    \"password\": \"123\"\r\n    //\"role\": \"customer\",\r\n    //\"assignedParkId\": 1\r\n\r\n}",
+							"raw": "{\r\n    \"name\": \"{{userName}}\",\r\n    \"email\": \"{{userEmail}}\",\r\n    \"password\": \"{{userPassword}}\",\r\n    \"phoneNumber\": \"{{userPhoneNumber}}\",\r\n    \"role\": \"{{userRole}}\",\r\n    \"assignedParkId\": {{agentAssignedParkId}}\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
 								}
 							}
 						},
-						"url": "http://localhost:3000/users"
-					},
-					"response": []
-				},
-				{
-					"name": "GetAllUser",
-					"request": {
-						"method": "GET",
-						"header": [],
-						"url": "http://localhost:3000/users"
+						"url": {
+							"raw": "{{base_url}}/users",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"users"
+							]
+						}
 					},
 					"response": []
 				},
@@ -130,14 +194,25 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"id\": 1,\r\n    \"name\": \"John Doe\",\r\n    \"email\": \"jacques@gmail.com\"\r\n}",
+							"raw": "{\r\n    \"name\": \"Johnny Doe\",\r\n    \"email\": \"{{userEmail}}\",\r\n    \"password\": \"{{userPassword}}\",\r\n    \"phoneNumber\": \"{{userPhoneNumber}}\",\r\n    \"role\": \"{{userRole}}\",\r\n    \"assignedParkId\": {{agentAssignedParkId}}\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
 								}
 							}
 						},
-						"url": "http://localhost:3000/users/1"
+						"url": {
+							"raw": "http://localhost:3000/users/1",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"users",
+								"1"
+							]
+						}
 					},
 					"response": []
 				},
@@ -146,7 +221,18 @@
 					"request": {
 						"method": "DELETE",
 						"header": [],
-						"url": "http://localhost:3000/users/1"
+						"url": {
+							"raw": "http://localhost:3000/users/1",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"users",
+								"1"
+							]
+						}
 					},
 					"response": []
 				}
@@ -163,7 +249,17 @@
 							"request": {
 								"method": "GET",
 								"header": [],
-								"url": "http://localhost:3000/orders"
+								"url": {
+									"raw": "http://localhost:3000/orders",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "3000",
+									"path": [
+										"orders"
+									]
+								}
 							},
 							"response": []
 						},
@@ -172,7 +268,18 @@
 							"request": {
 								"method": "GET",
 								"header": [],
-								"url": "http://localhost:3000/orders/1"
+								"url": {
+									"raw": "http://localhost:3000/orders/1",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "3000",
+									"path": [
+										"orders",
+										"1"
+									]
+								}
 							},
 							"response": []
 						},
@@ -183,14 +290,24 @@
 								"header": [],
 								"body": {
 									"mode": "raw",
-									"raw": "{\r\n    \"totalAmount\": 0,\r\n    \"bowlingAlley\":{\r\n        \"id\" : 18\r\n    }\r\n}",
+									"raw": "{\r\n    \"totalAmount\": 0,\r\n    \"bowlingAlley\":{\r\n        \"id\" : 1\r\n    }\r\n}",
 									"options": {
 										"raw": {
 											"language": "json"
 										}
 									}
 								},
-								"url": "http://localhost:3000/orders"
+								"url": {
+									"raw": "http://localhost:3000/orders",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "3000",
+									"path": [
+										"orders"
+									]
+								}
 							},
 							"response": []
 						},
@@ -208,7 +325,18 @@
 										}
 									}
 								},
-								"url": "http://localhost:3000/orders/1"
+								"url": {
+									"raw": "http://localhost:3000/orders/1",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "3000",
+									"path": [
+										"orders",
+										"1"
+									]
+								}
 							},
 							"response": []
 						},
@@ -217,7 +345,18 @@
 							"request": {
 								"method": "DELETE",
 								"header": [],
-								"url": "http://localhost:3000/orders/6"
+								"url": {
+									"raw": "http://localhost:3000/orders/6",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "3000",
+									"path": [
+										"orders",
+										"6"
+									]
+								}
 							},
 							"response": []
 						}
@@ -231,7 +370,17 @@
 							"request": {
 								"method": "GET",
 								"header": [],
-								"url": "http://localhost:3000/ordersItem"
+								"url": {
+									"raw": "http://localhost:3000/ordersItem",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "3000",
+									"path": [
+										"ordersItem"
+									]
+								}
 							},
 							"response": []
 						},
@@ -249,7 +398,18 @@
 										}
 									}
 								},
-								"url": "http://localhost:3000/ordersItem/1"
+								"url": {
+									"raw": "http://localhost:3000/ordersItem/1",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "3000",
+									"path": [
+										"ordersItem",
+										"1"
+									]
+								}
 							},
 							"response": []
 						},
@@ -260,14 +420,26 @@
 								"header": [],
 								"body": {
 									"mode": "raw",
-									"raw": "[\r\n    {\r\n        \"quantity\": 2,\r\n        \"product\" :{\r\n            \"id\": 2\r\n        },\r\n        \"order\": {\r\n            \"id\": 1\r\n        }\r\n    },\r\n    {\r\n        \"quantity\": 1,\r\n        \"product\" :{\r\n            \"id\": 1\r\n        },\r\n        \"order\": {\r\n            \"id\": 1\r\n    }\r\n}\r\n]\r\n    ",
+									"raw": "[\r\n    {\r\n        \"quantity\": 2,\r\n        \"product\" :{\r\n            \"id\": 1\r\n        },\r\n        \"order\": {\r\n            \"id\": 1\r\n        }\r\n    },\r\n    {\r\n        \"quantity\": 1,\r\n        \"product\" :{\r\n            \"id\": 1\r\n        },\r\n        \"order\": {\r\n            \"id\": 1\r\n    }\r\n}\r\n]\r\n    ",
 									"options": {
 										"raw": {
 											"language": "json"
 										}
 									}
 								},
-								"url": "http://localhost:3000/ordersItem/multiple/1"
+								"url": {
+									"raw": "http://localhost:3000/ordersItem/multiple/2",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "3000",
+									"path": [
+										"ordersItem",
+										"multiple",
+										"2"
+									]
+								}
 							},
 							"response": []
 						},
@@ -276,7 +448,18 @@
 							"request": {
 								"method": "DELETE",
 								"header": [],
-								"url": "http://localhost:3000/ordersItem/3"
+								"url": {
+									"raw": "http://localhost:3000/ordersItem/3",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "3000",
+									"path": [
+										"ordersItem",
+										"3"
+									]
+								}
 							},
 							"response": []
 						}
@@ -301,7 +484,20 @@
 								}
 							}
 						},
-						"url": "http://localhost:3000/payments/order=1/user=3/amount=527"
+						"url": {
+							"raw": "http://localhost:3000/payments/order=1/user=3/amount=527",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"payments",
+								"order=1",
+								"user=3",
+								"amount=527"
+							]
+						}
 					},
 					"response": []
 				},
@@ -310,7 +506,21 @@
 					"request": {
 						"method": "PUT",
 						"header": [],
-						"url": "http://localhost:3000/payments/total/order=1/user=1/"
+						"url": {
+							"raw": "http://localhost:3000/payments/total/order=1/user=1/",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"payments",
+								"total",
+								"order=1",
+								"user=1",
+								""
+							]
+						}
 					},
 					"response": []
 				},
@@ -319,16 +529,20 @@
 					"request": {
 						"method": "PUT",
 						"header": [],
-						"url": "http://localhost:3000/payments/order=1/user=1/"
-					},
-					"response": []
-				},
-				{
-					"name": "New Request",
-					"request": {
-						"method": "PUT",
-						"header": [],
-						"url": "http://localhost:3000/payments/cash/order=1/amount=10"
+						"url": {
+							"raw": "http://localhost:3000/payments/order=1/user=1/",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"payments",
+								"order=1",
+								"user=1",
+								""
+							]
+						}
 					},
 					"response": []
 				}
@@ -354,7 +568,17 @@
 										}
 									}
 								},
-								"url": "http://localhost:3000/bowlings"
+								"url": {
+									"raw": "http://localhost:3000/bowlings",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "3000",
+									"path": [
+										"bowlings"
+									]
+								}
 							},
 							"response": []
 						},
@@ -363,7 +587,17 @@
 							"request": {
 								"method": "GET",
 								"header": [],
-								"url": "http://localhost:3000/bowlings"
+								"url": {
+									"raw": "http://localhost:3000/bowlings",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "3000",
+									"path": [
+										"bowlings"
+									]
+								}
 							},
 							"response": []
 						},
@@ -372,7 +606,18 @@
 							"request": {
 								"method": "GET",
 								"header": [],
-								"url": "http://localhost:3000/bowlings/1"
+								"url": {
+									"raw": "http://localhost:3000/bowlings/1",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "3000",
+									"path": [
+										"bowlings",
+										"1"
+									]
+								}
 							},
 							"response": []
 						},
@@ -390,7 +635,18 @@
 										}
 									}
 								},
-								"url": "http://localhost:3000/bowlings/1"
+								"url": {
+									"raw": "http://localhost:3000/bowlings/1",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "3000",
+									"path": [
+										"bowlings",
+										"1"
+									]
+								}
 							},
 							"response": []
 						},
@@ -399,7 +655,18 @@
 							"request": {
 								"method": "DELETE",
 								"header": [],
-								"url": "http://localhost:3000/bowlings/3"
+								"url": {
+									"raw": "http://localhost:3000/bowlings/1",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "3000",
+									"path": [
+										"bowlings",
+										"1"
+									]
+								}
 							},
 							"response": []
 						}
@@ -415,14 +682,26 @@
 								"header": [],
 								"body": {
 									"mode": "raw",
-									"raw": "{\r\n    \"number\": 2,\r\n    \"qrCode\": \"qfeznfndj\"\r\n}",
+									"raw": "{\r\n    \"number\": 1,\r\n    \"qrCode\": \"qfeznfndj\"\r\n}",
 									"options": {
 										"raw": {
 											"language": "json"
 										}
 									}
 								},
-								"url": "http://localhost:3000/bowlings/1/bowlingAlley"
+								"url": {
+									"raw": "http://localhost:3000/bowlings/2/bowlingAlley",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "3000",
+									"path": [
+										"bowlings",
+										"2",
+										"bowlingAlley"
+									]
+								}
 							},
 							"response": []
 						},
@@ -443,11 +722,67 @@
 										}
 									}
 								},
-								"url": "http://localhost:3000/bowlings/2/bowlingAlley"
+								"url": {
+									"raw": "http://localhost:3000/bowlings/2/bowlingAlley",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "3000",
+									"path": [
+										"bowlings",
+										"2",
+										"bowlingAlley"
+									]
+								}
 							},
 							"response": []
 						}
 					]
+				}
+			]
+		},
+		{
+			"name": "Auth",
+			"item": [
+				{
+					"name": "login",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.collectionVariables.set('userToken', pm.response.json().access_token);",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"email\": \"{{userEmail}}\",\n    \"password\": \"{{userPassword}}\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/auth/login",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"auth",
+								"login"
+							]
+						}
+					},
+					"response": []
 				}
 			]
 		}
@@ -474,16 +809,58 @@
 	],
 	"variable": [
 		{
-			"key": "id",
-			"value": "1"
-		},
-		{
 			"key": "base_url",
-			"value": "http://localhost:3000/"
+			"value": "http://localhost:3000"
 		},
 		{
-			"key": "order",
-			"value": "1"
+			"key": "userName",
+			"value": "John Doe",
+			"type": "string"
+		},
+		{
+			"key": "userEmail",
+			"value": "john.doe@gmail.com",
+			"type": "string"
+		},
+		{
+			"key": "userPassword",
+			"value": "password",
+			"type": "string"
+		},
+		{
+			"key": "userPhoneNumber",
+			"value": "0600000000",
+			"type": "string"
+		},
+		{
+			"key": "userRole",
+			"value": "agent",
+			"type": "string"
+		},
+		{
+			"key": "agentAssignedParkId",
+			"value": "1",
+			"type": "string"
+		},
+		{
+			"key": "userToken",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "productName",
+			"value": "Burger",
+			"type": "string"
+		},
+		{
+			"key": "productDescription",
+			"value": "A delicious buger",
+			"type": "string"
+		},
+		{
+			"key": "productPrice",
+			"value": "8",
+			"type": "string"
 		}
 	]
 }
